@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import App from './App.vue'
+import ProductDetailsApp from './App.vue'
 import VueAxios from 'vue-axios'
 import axios from 'axios'
 import VueMaterial from 'vue-material'
@@ -30,7 +30,7 @@ Vue.directive('scroll', Scroll)
 Vue.component(FontAwesomeIcon.name, FontAwesomeIcon)
 
 // Global components
-Vue.component('app', require('./App').default)
+Vue.component('product-details-app', require('./App').default)
 
 // Hide buggy error for vue-material library
 Vue.config.errorHandler = (err, vm, info) => {
@@ -39,7 +39,7 @@ Vue.config.errorHandler = (err, vm, info) => {
     console.error(err)
   }
 }
-
+console.log('app', ProductDetailsApp)
 new Vue({
-  render: h => h(App)
+  render: h => h(ProductDetailsApp)
 }).$mount('#productDetailApp')

@@ -1,9 +1,7 @@
 <template>
   <product-details
-    v-if="moduleReady && commodityId !== null"
-    :commodity-id="commodityId"
+    v-if="moduleReady"
     :module-id="moduleId"
-    :is-modal="isModal"
     :edit-mode="editMode"
     :detail-link="detailLink"/>
 </template>
@@ -18,7 +16,7 @@ const DisplayType = new Enumeration({
 })
 
 export default {
-  name: 'app',
+  name: 'product-details-app',
   components: {
     ProductDetails
   },
@@ -31,18 +29,15 @@ export default {
     moduleId: null,
     moduleReady: false,
     moduleUsage: '',
-    isModal: true,
-    commodityId: null,
     detailLink: null
   }),
   mounted () {
+    console.log('test load')
     if (this.$el && this.$el.parentNode) {
       // get the module id from the parent div to pass to apis for security
-      this.moduleId = this.$el.parentNode.id.replace('app-', '')
+      this.moduleId = parseInt(this.$el.parentNode.id.replace('app-', ''))
       // this.moduleUsage = this.$el.parentNode.dataset.moduleUsage
-      this.isModal = this.moduleUsage === DisplayType.Modal
       this.moduleReady = true
-      this.commodityId = this.$el.parentNode.dataset.commodityId
       this.detailLink = this.$el.parentNode.dataset.detailLink
       console.log('mounted :: this.$el.parentNode.dataset.commodityId', this.$el.parentNode.dataset.commodityId)
 

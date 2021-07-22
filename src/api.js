@@ -12,7 +12,8 @@ const getHeaders = function (svc, antiForgery) {
 }
 
 const getServiceRoot = function (path) {
-  let serviceRoot = `${location.origin}`;
+  let serviceRoot = 'https://beta.hamiltoncaster.com'
+  // let serviceRoot = `${location.origin}`;
   serviceRoot += "/DesktopModules/" + path + "/";
   return serviceRoot;
 }
