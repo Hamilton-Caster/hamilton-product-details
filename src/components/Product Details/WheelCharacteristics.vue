@@ -2,7 +2,8 @@
   <div class="wheel-characteristics">
     <h2>Wheel Characteristics</h2>
     <specs-table
-      :wheel-type-url="wheelCharacteristics.WheelTypeUrl"
+      :wheel-image-url="wheelImageUrl"
+      :show-wheel-type-image="showWheelTypeImage"
       :attributes-list="wheelCharacteristics.WheelCharacteristics"/>
   </div>
 </template>
@@ -13,8 +14,14 @@ export default {
   name: 'wheel-characteristics',
   components: {SpecsTable},
   props: {
+    showWheelTypeImage: {
+      type: Boolean
+    },
     wheelCharacteristics: {
       type: Object
+    },
+    wheelImageUrl: {
+      type: String
     }
   },
   data () {

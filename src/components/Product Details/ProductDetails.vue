@@ -1,29 +1,39 @@
 <template>
-  <section class="container">
+  <section class="product-details-wrapper">
     <spinner v-if="showSpinner" />
     <template
       v-else>
       <contact-modal
         :display-modal.sync="displayCADModal" />
-      <product-header
-        class="row"
-        :product-details="productDetails"
-        @display-cad-modal="displayCADModal = $event"/>
+      <section class="container product-header-wrapper">
+        <product-header
+          class="row"
+          :product-details="productDetails"
+          :parts-list="selectedPartsList"
+          @display-cad-modal="displayCADModal = $event"/>
+      </section>
       <!-- TODO: Bunch of other stuff goes here -->
-      <part-options
-        :product-id="productDetails.PartID"
-        :selected-parts-list.sync="selectedPartsList"
-        :part-options="productDetails.PartOptions" />
-      <div class="specifications">
-        <product-specifications
-          v-if="productDetails.Specifications != null"
-          :product-specifications="productDetails.Specifications" />
-        <wheel-characteristics
-          v-if="productDetails.WheelCharacteristics != null"
-          :wheel-characteristics="productDetails.WheelCharacteristics" />
-        <product-charts
-          v-if="productDetails.ErgoProfile !== undefined && productDetails.ErgoProfile.length > 0"
-          :chart-data="productDetails.ErgoProfile" />
+      <section class="container-fluid">
+        <part-options
+          v-if="productDetails.PartOptions.length > 0"
+          :product-id="productDetails.PartID"
+          :selected-parts-list.sync="selectedPartsList"
+          :part-options="productDetails.PartOptions" />
+      </section>
+      <div class="container">
+        <div class="specifications">
+          <product-specifications
+            v-if="productDetails.Specifications != null"
+            :wheel-image-url="productDetails.Wheel_ImageURL"
+            :product-specifications="productDetails.Specifications" />
+          <wheel-characteristics
+            v-if="productDetails.WheelCharacteristics != null"
+            :show-wheel-type-image="productDetails.Show_WheelTypeImage"
+            :wheel-characteristics="productDetails.WheelCharacteristics" />
+          <product-charts
+            v-if="productDetails.ErgoProfile !== undefined && productDetails.ErgoProfile.length > 0"
+            :chart-data="productDetails.ErgoProfile" />
+        </div>
       </div>
     </template>
   </section>
@@ -99,17 +109,38 @@ export default {
 <style lang="scss">
   @import "../../assets/variables";
 
-  .specifications {
-    @media screen and (min-width: $medium) {
-      display: flex;
-      flex-direction: row;
-      margin: 0 -1rem;
+  .product-details-wrapper {
+
+    .specifications {
+      display: block;
 
       > div {
-        flex: 1;
-        padding: 1rem;
+        > h2 {
+          margin-bottom: 1rem;
+        }
+      }
+
+      @media screen and (min-width: $large) {
+        display: flex;
+        flex-direction: row;
+        margin: 2rem 0;
+        flex-wrap: wrap;
+
+        > div {
+          flex: 1 1 33%;
+          padding: 1rem;
+        }
+      }
+      @media screen and (min-width: $xx-large) {
+        flex-wrap: nowrap;
+
       }
     }
   }
+
+  .product-header-wrapper {
+    margin-bottom: 1rem;
+  }
+
 
 </style>

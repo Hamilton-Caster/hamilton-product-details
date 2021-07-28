@@ -2,6 +2,7 @@
   <div class="product-specifications">
     <h2>Product Specifications</h2>
     <specs-table
+      :wheel-image-url="wheelImageUrl"
       :attributes-list="productSpecifications.SpecificationAttributes"/>
   </div>
 </template>
@@ -15,6 +16,9 @@ export default {
   props: {
     productSpecifications: {
       type: Object
+    },
+    wheelImageUrl: {
+      type: String
     }
   },
   data () {

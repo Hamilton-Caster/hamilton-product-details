@@ -2,7 +2,6 @@
   <header class="parts-details-header">
     <product-image
       class="col-md-6"
-      :show-three-d="show3DImage"
       :product-details="productDetails" />
     <div class="product-summary col-md-6">
       <h1>
@@ -19,32 +18,28 @@
         <span v-html="productDetails.Description"></span>
       </p>
       <md-button
-        v-if="productDetails.Has3DImage"
-        @click="onView3DImageClick">
-        <font-awesome-icon
-          v-if="!show3DImage"
-          :icon="['fad', 'cube']" />
-        {{ imageToggleText }}
-      </md-button>
-      <md-button
         v-if="productDetails.CADVersionAvailable"
+        class="md-primary"
         @click="onDownloadCadClick">
         <font-awesome-icon :icon="['fas', 'download']" />
         Download CAD (step file)
       </md-button>
       <md-button
         v-if="productDetails.HasLocalCADFile"
+        class="md-primary"
         @click="onDownloadCadClick">
         <font-awesome-icon :icon="['fas', 'download']" />
         Download CAD
       </md-button>
       <md-button
+        class="md-primary"
         :href="emailLink + productDetails.BasePartID">
         <font-awesome-icon :icon="['fas', 'paper-plane']" />
-        Request Other CAD Format
+        Request CAD Format
       </md-button>
       <md-button
-        v-if="productDetails.PDFVersionURL"
+        v-if="productDetails.IsValidPart"
+        class="md-primary"
         @click="onDownloadPDFClick">
         <font-awesome-icon :icon="['fas', 'file-pdf']" />
         PDF Datasheet
@@ -79,11 +74,13 @@
             </label>
             <md-input
               id="downloadProfileName"
+              type="number"
               v-model="productQuantity" />
           </md-field>
         </div>
         <div class="md-layout-item md-small-size-50 md-size-25 button-wrap">
           <md-button
+            class="md-primary"
             @click="addToProject">
             <font-awesome-icon :icon="['fas', 'folder-open']" />
             Add to Project
@@ -103,18 +100,15 @@ export default {
     productDetails: {
       type: Object,
       required: true
+    },
+    partsList: {
+      type: Array
     }
   },
   data () {
     return {
       emailLink: 'mailto:cad@hamiltoncaster.com?Subject=Request CAD for Part ID ',
       productQuantity: 1,
-      show3DImage: false,
-    }
-  },
-  computed: {
-    imageToggleText () {
-      return this.show3DImage ? 'View Standard Image' : 'View 3D'
     }
   },
   methods: {
@@ -132,20 +126,18 @@ export default {
     onOtherFormatClick () {
     },
     onDownloadPDFClick () {
-      // let serviceFramework = $.ServicesFramework(8814)
+      let host = window.location.host.includes('dev.') ? 'https://beta.hamiltoncaster.com' : ''
 
       let partid = this.productDetails.BasePartID
-      // let baseServicepath = serviceFramework.getServiceRoot('AcuitiSolutions/ProductsBySeries') + 'List/'
-      //console.log(baseServicepath + "GetDataSheetPDF");
-      //var win = window.open("", "_blank");
-      let url = '/API/AcuitiSolutions/ProductsBySeries/List/'
-      window.location.href = url + "GetDataSheetPDF" + "?PartID=" + partid
-      window.focus()
+      let pdfUrl = '/DesktopModules/AcuitiSolutions/CatalogDetail/API/List/GetDataSheetPDF'
+      let filePath = `${host}${pdfUrl}?partid=${partid}`
 
-
-    },
-    onView3DImageClick () {
-      this.show3DImage = !this.show3DImage
+      let a = document.createElement('A');
+      a.href = filePath;
+      a.download = filePath.substr(filePath.lastIndexOf('/') + 1);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     },
     addToProject () {
       alert('do stuff with this')
@@ -162,75 +154,75 @@ export default {
 
 <style lang="scss">
   @import "../../assets/variables";
-  #content {
-    .parts-details-header {
-      h1 {
-        small {
-          display: block;
+
+  .parts-details-header {
+
+    h1 {
+      small {
+        display: block;
+        font-size: 1.5rem;
+      }
+    }
+    .sub-head {
+      font-size: 1.85rem;
+      font-weight: 700;
+      display: block;
+      line-height: 2.5rem;
+
+      small {
+        font-weight: normal;
+      }
+    }
+    .product-description {
+      margin: 1rem 0 .8rem;
+    }
+    a.md-button.md-theme-default,
+    button.md-button.md-theme-default {
+      background: $primaryColor;
+      border: none;
+      color: $white;
+      border-radius: none;
+      display: inline-block;
+      padding: 0.625rem;
+
+      .md-button-content {
+        font-size: 0.875rem;
+        font-weight: 700;
+        text-transform: none;
+      }
+
+      &:first-of-type {
+        margin-left: 0;
+      }
+    }
+    .product-summary {
+
+      .price {
+        margin-top: 2rem;
+        .price-label {
+          font-size: 1.5rem;
+          font-weight: 700;
+        }
+        .price-value {
           font-size: 1.5rem;
         }
-      }
-      .sub-head {
-        font-size: 1.85rem;
-        font-weight: 700;
-        display: block;
-        line-height: 2.5rem;
-
-        small {
-          font-weight: normal;
+        .price-caption {
+          font-style: italic;
+          margin: 0 .25rem 0 1rem;
+        }
+        .pricing-info-icon {
+          color: $primaryColor;
         }
       }
-      .product-description {
-        margin: 1rem 0 .8rem;
-      }
-      .product-summary {
-        a.md-button.md-theme-default,
-        button.md-button.md-theme-default {
-          background: $primaryColor;
-          border: none;
-          color: $white;
-          border-radius: none;
-          display: inline-block;
-          padding: 0.625rem;
 
-          .md-button-content {
-            font-size: 0.875rem;
-            font-weight: 700;
-            text-transform: none;
-          }
-
-          &:first-of-type {
-            margin-left: 0;
-          }
+      .project {
+        margin-top: 1.5rem;
+        input, textarea {
+          margin-bottom: 0;
         }
-
-        .price {
-          margin-top: 2rem;
-          .price-label {
-            font-size: 1.5rem;
-            font-weight: 700;
-          }
-          .price-value {
-            font-size: 1.5rem;
-          }
-          .price-caption {
-            font-style: italic;
-            margin: 0 .25rem 0 1rem;
-          }
-          .pricing-info-icon {
-            color: $primaryColor;
-          }
-        }
-
-        .project {
-          margin-top: 1.5rem;
-          input, textarea {
-            margin-bottom: 0;
-          }
-          .button-wrap {
-            display: flex;
-            align-items: center;
-          }
+        .button-wrap {
+          display: flex;
+          align-items: center;
         }
       }
     }

@@ -53,5 +53,31 @@ export default {
 </script>
 
 <style scoped lang="scss">
+  @import "../../assets/variables";
 
+  .part-options-wrapper {
+    background-color: $lightGreyBg;
+    padding: 1rem;
+    width: calc(100% + 2rem);
+    margin: 0 -1rem;
+    @media screen and (min-width: $medium) {
+      padding: 3rem 1rem 3rem;
+    }
+
+    > h2 {
+      text-align: center;
+      padding-bottom: 1rem;
+      @media screen and (min-width: $medium) {
+        padding-bottom: 3rem;
+      }
+    }
+
+    .part-options {
+      list-style: none;
+      display: flex;
+      margin: 0 auto;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  }
 </style>

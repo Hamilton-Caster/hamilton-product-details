@@ -1,7 +1,7 @@
 <template>
   <div class="specs-table panel panel-default">
     <div
-      v-if="specImage != null"
+      v-if="specImage != null && showWheelTypeImage"
       class="specs-table-item config-image">
       <a :href="wheelTypeUrl">
         <img
@@ -9,6 +9,13 @@
           class="application-image"
           :alt="specImage.Name">
       </a>
+    </div>
+    <div
+      class="product-spec-image"
+      v-else-if="wheelImageUrl">
+      <img
+        :src="wheelImageUrl"
+        class="application-image">
     </div>
 
     <div
@@ -66,6 +73,12 @@
       },
       wheelTypeUrl: {
         type: String
+      },
+      showWheelTypeImage: {
+        type: Boolean
+      },
+      wheelImageUrl: {
+        type: String
       }
     },
     data: () => ({
@@ -84,70 +97,102 @@
 <style lang="scss">
   @import "../../assets/variables";
 
-  .config-image {
-    min-width: 200px;
-    min-height: 200px;
-    text-align: center;
-
-    img {
-      width: auto;
-      height: 100%;
-      max-height: 200px;
-    }
-  }
-  $grey: rgba(168,173,177,1);
-  $padding: 15px;
-
-  .ratings-border {
-    border-color: $grey;
-    display: block;
-    margin-left: -$padding;
-    margin-right: -$padding;
-    padding-bottom: $padding;
-    position: relative;
-    top: $padding;
-  }
-  .specs-table-item.ratings ul {margin:0px !important;}
-  .specs-table-item.ratings li{
-    display: inline-block;
-    width: 13px;
-    height: 20px;
-    background: rgba(168,173,177,1);
-    margin: 5px 3px 0 0;
-    padding: 0;
-    background-image: none;
-    list-style-type:square;
-  }
-  @media (min-width: 1200px) {
-    .specs-table-item ul li {
-      width: 13px !important;
-      height: 20px !important;
-      margin: 5px 3px 0 0 !important;
-    }
-  }
-  .specs-table {
-    min-width: 50%;
-    font-size: 18px;
-    line-height: 22px;
-    border: 1px solid $lightGrey;
-    border-radius: 0;
-  }
-  .specs-table-item {
-    font-size: 20px;
-    line-height: 20px;
-    border-bottom: 1px solid $lightGrey;
-    > .col-md-6 {
-      padding: 1rem;
-      &:first-child {
-        font-weight: 700;
+  .specifications {
+    @media screen and (max-width: $medium) {
+      margin-top: 1.5rem;
+      h2 {
+        font-size: 2rem;
+        padding: 1rem 0 0.5rem;
       }
     }
-    .spec-info-icon {
-      font-size: 1rem;
-      margin-left: .8rem;
-      color: $primaryColor;
+
+    .config-image {
+      min-width: 200px;
+      min-height: 200px;
+      text-align: center;
+
+      img {
+        width: auto;
+        height: 100%;
+        max-height: 200px;
+      }
+    }
+    $grey: rgba(168,173,177,1);
+    $padding: 15px;
+
+    .ratings-border {
+      border-color: $grey;
+      display: block;
+      margin-left: -$padding;
+      margin-right: -$padding;
+      padding-bottom: $padding;
+      position: relative;
+      top: $padding;
+    }
+    .specs-table-item.ratings ul {margin:0px !important;}
+    .specs-table-item.ratings li{
+      display: inline-block;
+      width: 13px;
+      height: 20px;
+      background: rgba(168,173,177,1);
+      margin: 5px 3px 0 0;
+      padding: 0;
+      background-image: none;
+      list-style-type:square;
+    }
+    @media (min-width: 1200px) {
+      .specs-table-item ul li {
+        width: 13px !important;
+        height: 20px !important;
+        margin: 5px 3px 0 0 !important;
+      }
+    }
+    .specs-table {
+      min-width: 50%;
+      font-size: 18px;
+      line-height: 22px;
+      border: 1px solid $lightGrey;
+      border-radius: 0;
+
+      .specs-table-item,
+      .product-spec-image {
+        font-size: 20px;
+        line-height: 20px;
+        border-bottom: 1px solid $lightGrey;
+        > .col-md-6 {
+          padding: .5rem 1rem;
+          & ~ .col-md-6 {
+            padding-top: 0;
+            text-align: right;
+          }
+          @media screen and (min-width: $medium) {
+            padding: 1rem;
+            & ~ .col-md-6 {
+              padding-top: 1rem;
+              text-align: left;
+            }
+          }
+          &:first-child {
+            font-weight: 700;
+          }
+        }
+        .spec-info-icon {
+          font-size: 1rem;
+          margin-left: .8rem;
+          color: $primaryColor;
+        }
+      }
+      .product-spec-image {
+        text-align: center;
+        img {
+          max-height: 30rem;
+          max-width: 100%;
+        }
+      }
     }
   }
+
+
   .info-popopver {
     &.md-tooltip.md-theme-default {
       color: $black;

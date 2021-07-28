@@ -1,5 +1,5 @@
 <template>
-  <ul :title="rating">
+  <ul class="rating-blocks" :title="rating">
     <li
       v-for="(block, index) in blocks"
       :key="index"
@@ -50,7 +50,6 @@
   $ratingGrey: rgba(168,173,177,1);
   $ratingGradient: linear-gradient(to right, rgba(215,32,39,1), rgba(168,173,177,1) 70%) !important;
 
-  #content {
 
     .specs-table-item {
       &.ratings {
@@ -66,5 +65,4 @@
         }
       }
     }
-  }
 </style>

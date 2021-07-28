@@ -70,6 +70,29 @@ export default {
 
   }
 
+  .md-field.md-theme-default {
+    &.checkbox {
+      &:before,
+      &:after {
+        content: none;
+      }
+      .md-checkbox {
+
+        label {
+          top: 0;
+          font-size: 0.9rem;
+          padding-left: .5rem;
+        }
+        &.md-checked {
+          .md-checkbox-container {
+            background-color: $primaryColor;
+            border-color: $primaryColor;
+          }
+        }
+      }
+    }
+  }
+
   // Transition fade
   .fade-enter-active,
   .fade-leave-active {

@@ -5,7 +5,7 @@
       <span
         v-html="props.Name"></span>
       <template
-        v-if="props.HasToolTip">
+        v-if="props.HasToolTip && props.Type !== 'Link'">
         <md-tooltip
           class="info-popopver"
           md-direction="top">
@@ -21,7 +21,17 @@
           :icon="['fas', 'info-circle']" />
       </template>
     </div>
-    <div class="col-md-6" v-html="props.Value"></div>
+    <div
+      v-if="props.Type === 'Link'"
+      class="col-md-6">
+      <a :href="props.Value">
+        <span v-html="props.ToolTipValue"></span>
+      </a>
+    </div>
+    <div
+      v-else
+      class="col-md-6"
+      v-html="props.Value"></div>
   </div>
 </template>
 
@@ -35,6 +45,17 @@
   }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
+  @import "../../assets/variables";
 
+  .md-theme-default {
+    .specs-table-item {
+      a:not(.md-button) {
+        span {
+          color: $primaryColor;
+          text-decoration: underline;
+        }
+      }
+    }
+  }
 </style>
