@@ -98,15 +98,28 @@ export default {
 <style lang="scss">
   @import "../../assets/variables";
 
+  $mobileImageSize:   21.875rem;
+  $standardImageSize: 31.25rem;
+
   .product-details-wrapper {
     position: relative;
     .product-details-image {
       text-align: center;
-      min-height: 350px;
-      height: 350px;
+      min-height: $mobileImageSize;
+      margin-bottom: 2rem;
+      height: $mobileImageSize;
       overflow: hidden;
       @media screen and (min-width: $medium) {
-        height: 500px;
+        height: $standardImageSize;
+      }
+
+      img {
+        max-width: $mobileImageSize;
+        max-height: $mobileImageSize;
+        @media screen and (min-width: $medium) {
+          max-width: $standardImageSize;
+          max-height: $standardImageSize;
+        }
       }
 
       .image-caption {
@@ -114,15 +127,35 @@ export default {
         font-style: italic;
         text-align: center;
       }
+
+      #Part_3dImage {
+        @media screen and (max-width: $medium) {
+          width: $mobileImageSize;
+          height: $mobileImageSize + 2rem;
+          #cds-cad-viewer-container {
+            height: $mobileImageSize;
+            margin: -2em auto 2em;
+            width: $mobileImageSize;
+          }
+        }
+      }
+
     }
     #cds-cad-viewer-container {
       margin: 0 auto;
     }
+    #cds-icon-container {
+      position: relative;
+    }
     .three-d-toggle {
       position: absolute;
       bottom: 0;
-      right: 4rem;
+      right: 1rem;
       z-index: 500;
+      @media screen and (min-width: $medium) {
+        right: 4rem;
+      }
+
     }
   }
 </style>

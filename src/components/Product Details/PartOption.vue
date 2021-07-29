@@ -1,6 +1,7 @@
 <template>
   <li
     class="part-option"
+    :class="{'is-valid': isValid}"
     @click.stop="onOptionClick">
     <div class="part-option-header clearfix">
       <img
@@ -12,7 +13,7 @@
         </h3>
         <div>
           <span class="price-label">{{ partOption.UnitPriceLabel }}</span>
-          <span class="price-value"> ${{ partOption.UnitPrice }}</span>
+          <span class="price-value"> ${{ displayPrice }}</span>
         </div>
         <div
           v-if="partOption.Availability">
@@ -21,7 +22,7 @@
       </div>
     </div>
     <div
-      v-if="partOption.UnitPrice != null"
+      v-if="isValid"
       class="part-option-checkbox md-layout md-gutter">
       <div class="md-layout-item md-size-100">
         <md-field
@@ -72,6 +73,14 @@ export default {
       }
     },
   },
+  computed: {
+    displayPrice () {
+      return this.partOption.UnitPrice || 'Please Call for Pricing'
+    },
+    isValid () {
+      return this.partOption.UnitPrice !== 0
+    }
+  },
   methods: {
     onOptionClick () {
       this.isSelected = !this.isSelected
@@ -90,25 +99,25 @@ export default {
   @import "../../assets/variables";
 
   .part-option {
-    border: 1px solid $darkGrey;
+    border: 1px solid $mediumLightGrey;
     padding: 1rem;
     background: $white;
     width: 100%;
-    cursor: pointer;
     transition: background .2s ease-in-out;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     margin-bottom: .8rem;
 
-    .part-option-header {
+    &.is-valid {
+      border: 1px solid $darkGrey;
+      cursor: pointer;
 
+      &:hover {
+        background: darken($lightGreyBg, 5%);
+      }
     }
 
-    &:hover {
-      //background: $lightGreyBg;
-      background: darken($lightGreyBg, 5%);
-    }
 
     @media screen and (min-width: $medium) {
       width: calc(50% - 1rem);

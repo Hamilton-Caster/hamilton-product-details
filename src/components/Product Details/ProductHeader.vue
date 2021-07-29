@@ -1,10 +1,7 @@
 <template>
   <header class="parts-details-header">
-    <product-image
-      class="col-md-6"
-      :product-details="productDetails" />
-    <div class="product-summary col-md-6">
-      <h1>
+    <div class="product-summary hide-desktop">
+      <h1 class="mobile-title">
         <small>Part Details for</small>
         <span v-html="productDetails.BasePartID"></span>
       </h1>
@@ -12,6 +9,21 @@
         Load Capacity (lbs.): <small>{{ productDetails.LoadCapacity }}</small>
       </span>
       <span class="sub-head">
+        Availability: <small>{{ productDetails.Availability }}</small>
+      </span>
+    </div>
+    <product-image
+      class="col-md-6"
+      :product-details="productDetails" />
+    <div class="product-summary col-md-6">
+      <h1 class="hide-mobile">
+        <small>Part Details for</small>
+        <span v-html="productDetails.BasePartID"></span>
+      </h1>
+      <span class="sub-head hide-mobile">
+        Load Capacity (lbs.): <small>{{ productDetails.LoadCapacity }}</small>
+      </span>
+      <span class="sub-head hide-mobile">
         Availability: <small>{{ productDetails.Availability }}</small>
       </span>
       <p class="product-description">
@@ -161,6 +173,9 @@ export default {
       small {
         display: block;
         font-size: 1.5rem;
+      }
+      &.mobile-title {
+        margin-top: 1rem;
       }
     }
     .sub-head {

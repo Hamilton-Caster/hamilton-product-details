@@ -142,5 +142,16 @@ export default {
     margin-bottom: 1rem;
   }
 
+  .hide-mobile {
+    @media screen and (max-width: $medium) {
+      display: none !important;
+    }
+  }
+  .hide-desktop {
+    @media screen and (min-width: $medium) {
+      display: none !important;
+    }
+  }
+
 
 </style>
