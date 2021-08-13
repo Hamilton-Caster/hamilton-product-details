@@ -13,8 +13,9 @@
           <font-awesome-icon :icon="['fas', 'times']" />
         </button>
       </md-dialog-title>
-      <md-tabs>
-        <md-tab md-label="New Registration">
+      <md-tabs
+        @md-changed="onTabsChanged">
+        <md-tab :md-label="registrationTabTitle">
           <p>
             To minimize abuse, a one-time registration is required before you can view or download CAD drawings.
             Hamilton takes your privacy very seriously. Hamilton does not sell or rent your contact information to
@@ -29,7 +30,7 @@
                 </label>
                 <md-input
                   id="downloadProfileName"
-                  v-model="name" />
+                  v-model="cadUser.FullName" />
               </md-field>
             </div>
             <div class="md-layout-item md-small-size-100 md-size-50">
@@ -40,7 +41,7 @@
                 </label>
                 <md-input
                   id="downloadProfileCompanyName"
-                  v-model="companyName" />
+                  v-model="cadUser.Company" />
               </md-field>
             </div>
             <div class="md-layout-item md-size-100 md-small-size-100">
@@ -51,7 +52,7 @@
                 </label>
                 <md-input
                   id="downloadProfileAddress"
-                  v-model="address" />
+                  v-model="cadUser.Address" />
               </md-field>
             </div>
             <div class="md-layout-item md-size-50 md-small-size-100">
@@ -62,7 +63,7 @@
                 </label>
                 <md-input
                   id="downloadProfileCity"
-                  v-model="city" />
+                  v-model="cadUser.City" />
               </md-field>
             </div>
             <div class="md-layout-item md-size-30 md-small-size-100">
@@ -73,7 +74,7 @@
                 </label>
                 <md-input
                   id="downloadProfileState"
-                  v-model="state" />
+                  v-model="cadUser.State" />
               </md-field>
             </div>
             <div class="md-layout-item md-size-20 md-small-size-100">
@@ -84,7 +85,7 @@
                 </label>
                 <md-input
                   id="downloadProfileZip"
-                  v-model="zip" />
+                  v-model="cadUser.Zipcode" />
               </md-field>
             </div>
             <div class="md-layout-item md-size-50 md-small-size-100">
@@ -95,7 +96,7 @@
                 </label>
                 <md-input
                   id="downloadProfileEmail"
-                  v-model="email" />
+                  v-model="cadUser.Email" />
               </md-field>
             </div>
             <div class="md-layout-item md-size-50 md-small-size-100">
@@ -106,40 +107,65 @@
                 </label>
                 <md-input
                   id="downloadProfilePhone"
-                  v-model="phone" />
+                  v-model="cadUser.Phone" />
               </md-field>
             </div>
             <div class="md-layout-item md-size-100 md-small-size-100">
-              <md-field>
+              <md-field
+                class="download-format-option-field">
                 <label
                   for="downloadProfileFormat">
                   Desired Format
                 </label>
                 <md-select
+                  class="download-format-option"
                   id="downloadProfileFormat"
-                  v-model="desiredFormat">
+                  v-model="cadUser.DownloadFormats">
                   <md-option
                     v-for="option in desiredFormatOptions"
-                    :key="option.value">
-                    {{ option.name }}
+                    :key="option.title"
+                    :value="option.value">
+                    {{ option.text }}
                   </md-option>
                 </md-select>
               </md-field>
             </div>
           </fieldset>
           <md-dialog-actions>
-            <md-button @click="onRegister">
-              Register
-            </md-button>
-            <md-button @click="onCancel">
-              Cancel
-            </md-button>
+            <div class="message-wrap">
+              <transition
+                name="fade"
+                mode="in-out">
+                <div
+                  v-if="showNote"
+                  class="note-block"
+                  :class="noteType">
+                  {{ noteMessage }}
+                </div>
+              </transition>
+            </div>
+            <div class="dialog-button-wrap">
+              <md-button
+                v-if="cadUser.IsValidCADUser"
+                class="md-primary"
+                @click="onUpdate">
+                Update Profile
+              </md-button>
+              <md-button
+                v-else
+                class="md-primary"
+                @click="onRegister">
+                Register
+              </md-button>
+              <md-button @click="onCancel">
+                Cancel
+              </md-button>
+            </div>
           </md-dialog-actions>
         </md-tab>
         <md-tab md-label="Already Registered">
           <p>
-            If you have already registered in the past, please enter your full name and email address so that we can
-            look it up.
+            If you have already registered in the past, please enter your full name and email address so that we can look it up.
           </p>
           <fieldset class="md-layout md-gutter">
             <div class="md-layout-item md-size-50 md-small-size-100">
@@ -167,12 +193,26 @@
             </div>
           </fieldset>
           <md-dialog-actions>
-            <md-button @click="onSearch">
-              Search Profile
-            </md-button>
-            <md-button @click="onCancel">
-              Cancel
-            </md-button>
+            <div class="message-wrap">
+              <transition
+                name="fade"
+                mode="in-out">
+                <div
+                  v-if="showNote"
+                  class="note-block"
+                  :class="noteType">
+                  {{ noteMessage }}
+                </div>
+              </transition>
+            </div>
+            <div class="dialog-button-wrap">
+              <md-button class="md-primary" @click="onSearch">
+                Lookup Registration
+              </md-button>
+              <md-button @click="onCancel">
+                Close
+              </md-button>
+            </div>
           </md-dialog-actions>
         </md-tab>
       </md-tabs>
@@ -182,12 +222,25 @@
 
 <script>
 
+import {validateCADUser, addCADUser, editCADUser} from '../../api'
+import {DownloadFormats} from '../enums'
+
+const ErrorMessage = 'An error occurred. Please verify all fields and try again.'
+
+
 export default {
   name: 'contact-modal',
   props: {
     displayModal: {
       type: Boolean,
       default: false
+    },
+    isValidCadUser: {
+      type: Boolean,
+      default: false
+    },
+    cadUser: {
+      type: Object
     }
   },
   data () {
@@ -195,29 +248,17 @@ export default {
       existingName: null,
       existingEmail: null,
       showModal: false,
-      name: null,
-      companyName: null,
-      address: null,
-      city: null,
-      state: null,
-      zip: null,
-      email: null,
-      phone: null,
-      desiredFormat: null,
-      desiredFormatOptions: [
-        {
-          name: 'option 1',
-          value: 1
-        },
-        {
-          name: 'option 2',
-          value: 2
-        },
-        {
-          name: 'option 3',
-          value: 3
-        }
-      ]
+      desiredFormatOptions: DownloadFormats,
+      showLookupError: false,
+      isMobileSize: false,
+      noteType: null,
+      showNote: false,
+      noteMessage: null
+    }
+  },
+  computed: {
+    registrationTabTitle () {
+      return this.cadUser.IsValidCADUser ? 'Manage Profile' : 'New Registration'
     }
   },
   watch: {
@@ -234,27 +275,105 @@ export default {
   },
   methods: {
     onRegister () {
-      console.log('onRegister', this.newName)
+      console.log('onRegister', this.cadUser)
+      addCADUser(this.cadUser)
+        .then(res => {
+          console.log('validateUser :: res', res)
+          this.showLookupError = !res.IsValidCADUser
+          this.$emit('update:cad-user', res)
+          this.noteMessage = res.IsValidCADUser ?  'New registration successful!' : ErrorMessage
+          this.noteType = res.IsValidCADUser ? 'success' : 'error'
+          this.showNote = true
+          setTimeout(() => {
+            this.showNote = false
+          }, 5000)
+
+        })
+        .catch(res => {
+          this.noteMessage = res
+          this.noteType = 'error'
+          this.showNote = true
+          setTimeout(() => {
+            this.showNote = false
+          }, 5000)
+        })
+    },
+    onUpdate () {
+      console.log('onRegister', this.cadUser)
+      editCADUser(this.cadUser)
+        .then(res => {
+          console.log('validateUser :: res', res)
+          this.$emit('update:cad-user', res)
+          this.noteMessage = res.IsValidCADUser ?  'Profile Updated!' : ErrorMessage
+          this.noteType = res.IsValidCADUser ? 'success' : 'error'
+          this.showNote = true
+          setTimeout(() => {
+            this.showNote = false
+          }, 5000)
+
+        })
+        .catch(res => {
+          this.noteMessage = res
+          this.noteType = 'error'
+          this.showNote = true
+          setTimeout(() => {
+            this.showNote = false
+          }, 5000)
+        })
     },
     onSearch () {
       console.log('onSearch :: this.existingName', this.existingName)
+      validateCADUser(this.existingName, this.existingEmail)
+        .then(res => {
+          console.log('validateUser :: res', res)
+          this.showLookupError = !res.IsValidCADUser
+          this.$emit('update:cad-user', res)
+          if (res.IsValidCADUser) {
+            this.onCancel()
+          } else {
+            this.noteMessage = ErrorMessage
+            this.noteType = 'Unable to locate a user with the information provided'
+            this.showNote = true
+            setTimeout(() => {
+              this.showNote = false
+            }, 5000)
+          }
+        })
+        .catch(res => {
+            this.noteMessage = res
+            this.noteType = 'error'
+            this.showNote = true
+            setTimeout(() => {
+              this.showNote = false
+            }, 5000)
+        })
     },
     onCancel () {
       this.showModal = false
-      console.log('onCancel')
+      this.showNote = false
     },
     onModalClosed () {
-      const scrollY = document.body.style.top
-      document.body.style.position = ''
-      document.body.style.top = ''
-      window.scrollTo(0, parseInt(scrollY || '0') * -1)
+      this.showLookupError = false
+      if (this.isMobileSize) {
+        const scrollY = document.body.style.top
+        document.body.style.position = ''
+        document.body.style.top = ''
+        window.scrollTo(0, parseInt(scrollY || '0') * -1)
+      }
     },
     onModalOpened () {
+      this.isMobileSize = window.matchMedia('(max-width: 769px)').matches
+
       console.log('onModalOpened :: `-${window.scrollY}px`', `-${window.scrollY}px`)
-      setTimeout(function () {
-        document.body.style.top = `-${window.scrollY}px`
-        document.body.style.position = 'fixed'
-      }, 500)
+      if (this.isMobileSize) {
+        setTimeout(function () {
+          document.body.style.top = `-${window.scrollY}px`
+          document.body.style.position = 'fixed'
+        }, 500)
+      }
+    },
+    onTabsChanged () {
+      this.showNote = false
     }
   },
   created () {
@@ -299,19 +418,25 @@ export default {
   $tab_hoverOpacity: .83;
   $tab_selectedOpacity: 1;
 
-  position: relative;
-  float: left;
-  max-width: 80rem;
-  margin: 0 auto 1.5rem;
-
   input,
   textarea {
     margin-bottom: 0;
   }
+  max-width: 80rem;
+  margin: 0 auto 1.5rem;
 
   @media screen and (min-width: $small) {
     margin-top: 0.75rem;
     margin-bottom: -0.1rem;
+  }
+
+  @media screen and (max-width: $medium) {
+    position: relative;
+    float: left;
+  }
+
+  &.md-dialog {
+    z-index: 1001;
   }
 
   @media screen and (max-width: $small) {
@@ -385,6 +510,36 @@ export default {
           }
         }
       }
+
+      @media screen and (min-width: $medium) {
+        .md-tabs-content {
+          min-height: 33.75rem;
+          height: 100%;
+
+          .md-tabs-container {
+            height: 100%;
+          }
+
+          .md-tab {
+            height: 100%;
+            position: relative;
+            padding-left: 2rem;
+            padding-right: 2rem;
+
+            .md-dialog-actions {
+              display: flex;
+
+              @media screen and (min-width: $medium) {
+                //display: flex;
+                padding: 0 0 .5rem 0;
+                justify-content: space-between;
+                position: relative;
+                right: unset;
+              }
+            }
+          }
+        }
+      }
     }
 
     .md-button:not([disabled]).md-focused:before,
@@ -404,6 +559,43 @@ export default {
       background-color: transparent;
     }
   }
+
+  .md-dialog-actions {
+    .message-wrap { min-width: 50%; }
+    .dialog-button-wrap { }
+    a.md-button.md-theme-default,
+    button.md-button.md-theme-default {
+      &.md-primary {
+        background: $primaryColor;
+        border: none;
+        color: $white;
+        border-radius: none;
+        display: inline-block;
+        padding: .625rem;
+        &:hover {
+          background-color: $primaryColorActive;
+          color: $white
+        }
+      }
+      &:hover {
+        background-color: $white;
+        color: $primaryColorActive;
+      }
+    }
+  }
+  .note-block {
+    min-width: 50%;
+  }
+}
+
+.md-overlay {
+  z-index: 1000;
+}
+.md-dialog.product-finder-modal {
+  z-index: 1003;
+}
+.md-theme-default .md-menu-content-small.md-menu-content.md-menu-content-bottom-start {
+  z-index: 1002;
 }
 
 </style>

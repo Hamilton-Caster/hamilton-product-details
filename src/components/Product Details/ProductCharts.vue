@@ -53,7 +53,7 @@ export default {
           pointInterval: 50
         },
         series: [{
-          type: 'area',
+          type: 'line',
           name: chart.XAxisLabel,
           data: chart.ErgoCharacteristics.map(point => ([point.XAxisValue, point.YAxisValue])),
           showInLegend: false,

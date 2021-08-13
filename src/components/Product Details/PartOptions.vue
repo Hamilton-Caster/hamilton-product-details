@@ -58,7 +58,7 @@ export default {
   .part-options-wrapper {
     background-color: $lightGreyBg;
     padding: 1rem;
-    width: calc(100% + 2rem);
+    width: calc(100% + 1.96rem);
     margin: 0 -1rem;
     @media screen and (min-width: $medium) {
       padding: 3rem 1rem 3rem;

@@ -1,19 +1,33 @@
 <template>
-  <section class="product-details-wrapper">
-    <spinner v-if="showSpinner" />
+  <md-empty-state
+    v-if="dataLoaded && !productDetails.IsValidPart">
+    <font-awesome-icon class="md-empty-state-icon" :icon="['fad', 'sad-tear']" />
+    <strong class="md-empty-state-label">Part Not Found</strong>
+    <p class="md-empty-state-description">The part you are looking is not here. You can use the Product Finder to search all parts.</p>
+    <md-button
+      @click="goToProductFinder"
+      class="md-raised">Go To Product Finder</md-button>
+  </md-empty-state>
+  <section
+    v-else
+    class="product-details-wrapper">
+    <spinner class="product-details-spinner" :show-spinner="showSpinner" />
     <template
-      v-else>
+      v-if="!showSpinner">
       <contact-modal
+        :cad-user.sync="cadUser"
         :display-modal.sync="displayCADModal" />
       <section class="container product-header-wrapper">
         <product-header
           class="row"
+          :cad-user="cadUser"
           :product-details="productDetails"
           :parts-list="selectedPartsList"
+          :is-valid-cad-user="isValidCadUser"
           @display-cad-modal="displayCADModal = $event"/>
       </section>
       <!-- TODO: Bunch of other stuff goes here -->
-      <section class="container-fluid">
+      <section class="container-fluid part-options-section">
         <part-options
           v-if="productDetails.PartOptions.length > 0"
           :product-id="productDetails.PartID"
@@ -24,6 +38,8 @@
         <div class="specifications">
           <product-specifications
             v-if="productDetails.Specifications != null"
+            :has-product-config-attributes="productDetails.HasProductConfigAttributes"
+            :product-type="productDetails.ProductType"
             :wheel-image-url="productDetails.Wheel_ImageURL"
             :product-specifications="productDetails.Specifications" />
           <wheel-characteristics
@@ -40,7 +56,7 @@
 </template>
 
 <script>
-import { getDetailsAPI } from '../../api'
+import { getDetailsAPI, getIsValidCADUser} from '../../api'
 import utilities from '../../utilities/helpers'
 import Spinner from '../Utilities/Spinner'
 import ProductHeader from './ProductHeader'
@@ -76,9 +92,23 @@ export default {
       antiForgery: null,
       moduleService: {},
       // Component Items
+      dataLoaded: false,
       displayCADModal: false,
       isMobile: true,
-      partId: partIdQueryParam || 'W-315-D-1/2',
+      cadUser: {
+        Address: null,
+        CADUserID: 0,
+        City: null,
+        Company: null,
+        DownloadFormats: null,
+        Email: null,
+        FullName: null,
+        IsValidCADUser: false,
+        Phone: null,
+        State: null,
+        Zipcode: null
+      },
+      partId: partIdQueryParam,
       productDetails: null,
       productTitle: '',
       showSpinner: true,
@@ -86,30 +116,47 @@ export default {
     }
   },
   computed: {
+    isValidCadUser () {
+      return this.cadUser.IsValidCADUser
+    }
   },
   methods: {
     getDetails () {
       getDetailsAPI(this.partId, this.detailLink)
       .then(res => {
-        console.log('getDetails :: res', res)
         this.productDetails = res
         this.showSpinner = false
+        this.dataLoaded = true
       })
     },
+    validateUser () {
+      getIsValidCADUser()
+      .then(res => {
+        this.cadUser = res
+      })
+    },
+    goToProductFinder () {
+      window.location.href = '/Configurator-Search-Results'
+    }
   },
   created () {
     this.moduleService[`svc-${this.moduleId}`] = this.svc
     this.getDetails()
   },
   mounted () {
+    this.validateUser()
   }
 }
 </script>
 
 <style lang="scss">
   @import "../../assets/variables";
-
+  .md-empty-state-label {
+    margin-top: 2rem;
+    font-size: 2.5rem;
+  }
   .product-details-wrapper {
+    min-height: 50rem;
 
     .specifications {
       display: block;
@@ -153,5 +200,64 @@ export default {
     }
   }
 
+  .part-options-section {
+    &.container-fluid {
+      @media screen and (min-width: $xxx-large) {
+        padding: 0;
+      }
+    }
+  }
 
+  .product-details-spinner {
+    min-height: 25rem;
+  }
+
+  .note-block {
+    padding: .825rem;
+    background: $lightGreyBg;
+    color: $primaryColor;
+    border: 1px solid lightGrey;
+    border-left: 4px solid $warning;
+
+    &.error {
+      border-left: 4px solid $warning;
+      color: $primaryColor;
+    }
+    &.success {
+      border-left: 4px solid $success;
+      color: $successText;
+    }
+  }
+
+  a.md-button.md-theme-default,
+  button.md-button.md-theme-default {
+    &.md-outline {
+      color: $primaryColor;
+      border: 1px solid $primaryColor;
+      &:hover {
+        background-color: transparent;
+        text-decoration: none;
+      }
+    }
+
+    &.md-primary {
+      background: $primaryColor;
+      color: $white;
+    }
+
+    border: none;
+    border-radius: none;
+    display: inline-block;
+    padding: 0.625rem;
+
+    .md-button-content {
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-transform: none;
+    }
+
+    &:first-of-type {
+      margin-left: 0;
+    }
+  }
 </style>

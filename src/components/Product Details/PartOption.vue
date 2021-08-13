@@ -8,17 +8,18 @@
         class="option-image"
         :src="partOption.ImageUrl"
         :alt="partOption.Description">
-      <div class="part-details">
-        <h3 v-html="partOption.Description">
-        </h3>
-        <div>
-          <span class="price-label">{{ partOption.UnitPriceLabel }}</span>
-          <span class="price-value"> ${{ displayPrice }}</span>
-        </div>
-        <div
-          v-if="partOption.Availability">
-          Availability: <span v-html="partOption.Availability"></span>
-        </div>
+      <h3 v-html="partOption.Description">
+      </h3>
+
+    </div>
+    <div class="part-details">
+      <div>
+        <span class="price-label">{{ partOption.UnitPriceLabel }}</span>
+        <span class="price-value"> {{ displayPrice }}</span>
+      </div>
+      <div
+        v-if="partOption.Availability">
+        Availability: <span v-html="partOption.Availability"></span>
       </div>
     </div>
     <div
@@ -34,7 +35,6 @@
         </md-field>
       </div>
     </div>
-
   </li>
 </template>
 
@@ -61,21 +61,22 @@ export default {
   watch: {
     isSelected: {
       handler: function (isSelected) {
-        console.log('watch :: isSelected', isSelected)
         let partOptionsList = [...this.selectedPartOptions]
         if (isSelected) {
-          partOptionsList.push(this.partOption.PartID)
+          partOptionsList.push({
+            partId: this.partOption.PartID,
+            unitPrice: parseInt(this.partOption.UnitPrice)
+          })
         } else {
-          partOptionsList = partOptionsList.filter(option => option !== this.partOption.PartID)
+          partOptionsList = partOptionsList.filter(option => option.partId !== this.partOption.PartID)
         }
         this.$emit('update:selected-part-options', partOptionsList)
-
       }
     },
   },
   computed: {
     displayPrice () {
-      return this.partOption.UnitPrice || 'Please Call for Pricing'
+      return this.partOption.UnitPrice !== 0 ? `$${this.partOption.UnitPrice}` : 'Please Call for Pricing'
     },
     isValid () {
       return this.partOption.UnitPrice !== 0
@@ -106,7 +107,6 @@ export default {
     transition: background .2s ease-in-out;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     margin-bottom: .8rem;
 
     &.is-valid {
@@ -124,11 +124,11 @@ export default {
       margin: 0 .5rem .8rem;
     }
     @media screen and (min-width: $x-large) {
-      width: calc(32% - 1rem);
+      width: 16rem;
     }
-    @media screen and (min-width: $xx-large) {
-      width: calc(24% - 1rem);
-    }
+    //@media screen and (min-width: $xx-large) {
+    //  max-width: 30rem;
+    //}
 
       h3 {
         line-height: 1.25;
@@ -138,13 +138,18 @@ export default {
       }
 
     .option-image {
-      max-width: 10rem;
+      width: 7rem;
       float: left;
-      padding-right: 2rem;
+      padding-right: 1rem;
+    }
+    h3 {
+      float: right;
+      width: calc(100% - 7rem);
     }
     .part-details {
-      float: right;
-      width: calc(100% - 11rem);
+      clear: both;
+      padding-top: 1.5rem;
+      padding-bottom: 1rem;
     }
     .price-label {
       font-size: 1rem;
@@ -173,8 +178,9 @@ export default {
       clear: both;
       margin-left: 0;
       margin-right: 0;
+      justify-self: space-between;
+
       .checkbox.md-field {
-        text-align: center;
         display: block;
         padding: 0;
         margin-bottom: 0;

@@ -29,7 +29,17 @@ function dynamicSort(property, sortOrder = 1, isCurrency) {
   }
 }
 
+function downloadFile (url) {
+  const a = document.createElement('a')
+  a.href = url
+  a.download = url.split('/').pop()
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+}
+
 export default {
+  downloadFile,
   getKeyByValue,
   dynamicSort
 }
