@@ -35,7 +35,9 @@
           :part-options="productDetails.PartOptions" />
       </section>
       <div class="container">
-        <div class="specifications">
+        <div
+          class="specifications"
+          :class="{'has-charts': hasCharts}">
           <product-specifications
             v-if="productDetails.Specifications != null"
             :has-product-config-attributes="productDetails.HasProductConfigAttributes"
@@ -47,7 +49,7 @@
             :show-wheel-type-image="productDetails.Show_WheelTypeImage"
             :wheel-characteristics="productDetails.WheelCharacteristics" />
           <product-charts
-            v-if="productDetails.ErgoProfile !== undefined && productDetails.ErgoProfile.length > 0"
+            v-if="hasCharts"
             :chart-data="productDetails.ErgoProfile" />
         </div>
       </div>
@@ -118,6 +120,9 @@ export default {
   computed: {
     isValidCadUser () {
       return this.cadUser.IsValidCADUser
+    },
+    hasCharts () {
+      return this.productDetails.ErgoProfile !== undefined && this.productDetails.ErgoProfile.length > 0
     }
   },
   methods: {
@@ -160,6 +165,12 @@ export default {
 
     .specifications {
       display: block;
+      --columnWidth: 50%;
+      --flex-grow: 0;
+      &.has-charts {
+        --columnWidth: 33%;
+        --flex-grow: 1;
+      }
 
       > div {
         > h2 {
@@ -172,15 +183,26 @@ export default {
         flex-direction: row;
         margin: 2rem 0;
         flex-wrap: wrap;
+        justify-content: center;
 
         > div {
-          flex: 1 1 33%;
+          flex: var(--flex-grow) 1 var(--columnWidth);
+          //min-width: 32rem;
           padding: 1rem;
+          @media screen and (max-width: $xx-large) {
+            &.product-charts {
+              flex: 2 2 var(--columnWidth);
+              //min-width: 34rem;
+            }
+          }
+
         }
+      }
+      @media screen and (min-width: $x-large) {
+        --columnWidth: 33%;
       }
       @media screen and (min-width: $xx-large) {
         flex-wrap: nowrap;
-
       }
     }
   }
