@@ -187,7 +187,7 @@ export default {
 
         > div {
           flex: var(--flex-grow) 1 var(--columnWidth);
-          //min-width: 32rem;
+          min-width: 32rem;
           padding: 1rem;
           @media screen and (max-width: $xx-large) {
             &.product-charts {

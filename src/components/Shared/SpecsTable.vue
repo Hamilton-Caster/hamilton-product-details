@@ -171,6 +171,11 @@
               padding-top: 1rem;
               text-align: left;
             }
+            width: calc(100% - 19rem);
+            &:first-child {
+              width: 19rem;
+            }
+
           }
           &:first-child {
             font-weight: 700;
