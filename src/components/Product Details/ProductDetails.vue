@@ -203,7 +203,7 @@ export default {
   .part-options-section {
     &.container-fluid {
       @media screen and (min-width: $xxx-large) {
-        padding: 0;
+        padding: 0 1rem;
       }
     }
   }

@@ -185,7 +185,7 @@
       .product-spec-image {
         text-align: center;
         img {
-          max-height: 30rem;
+          max-height: 20rem;
           max-width: 100%;
         }
       }

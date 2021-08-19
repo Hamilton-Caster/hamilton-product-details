@@ -279,13 +279,16 @@ export default {
 
           .price-caption {
             margin: 0.6rem .5rem 0 0;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             display: inline-block;
             color: $primaryColor;
             font-style: italic;
             font-weight: 700;
             border-bottom: 1px dotted $primaryColor;
             padding-bottom: 0.26rem;
+            @media screen and (min-width: $medium) {
+              font-size: 1.4rem;
+            }
           }
 
           .pricing-info {
