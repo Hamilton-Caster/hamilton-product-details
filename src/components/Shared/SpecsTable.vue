@@ -3,12 +3,19 @@
     <div
       v-if="specImage != null && showWheelTypeImage"
       class="specs-table-item config-image">
-      <a :href="wheelTypeUrl">
+      <a
+        v-if="wheelTypeUrl"
+        :href="wheelTypeUrl">
         <img
           :src="specImage.Value"
           class="application-image"
           :alt="specImage.Name">
       </a>
+      <img
+        v-else
+        :src="specImage.Value"
+        class="application-image"
+        :alt="specImage.Name">
     </div>
     <div
       class="product-spec-image"
@@ -20,15 +27,15 @@
 
     <div
       class="specs-table-item ratings row"
-      v-for="(rating, index) in ratings"
-      :key="index">
+      v-for="(rating, ratingIndex) in ratings"
+      :key="ratingIndex">
       <div
         class="col-md-6">
         {{ rating.Name }}
         <template
           v-if="rating.HasToolTip">
           <md-tooltip
-            class="info-popopver"
+            class="info-popopver specs"
             md-direction="top">
             <div class="inner-popover">
               <span
@@ -38,7 +45,7 @@
           </md-tooltip>
           <font-awesome-icon
             class="spec-info-icon"
-            :icon="['fas', 'info-circle']" />
+            :icon="['fal', 'circle-info']" />
         </template>
       </div>
       <rating-blocks
@@ -47,7 +54,7 @@
     <template
       v-for="(attribute, attributeIndex) in attributesList">
       <detail-text
-        v-if="attribute.ATTRIBUTE_TYPE !== AttributeTypes.Rating && !attribute.Value.includes('/images/')"
+        v-if="attribute.Type !== AttributeTypes.Rating && !attribute.Value.includes('/images/')"
         :key="attributeIndex"
         v-bind="attribute" />
     </template>
@@ -107,14 +114,11 @@
     }
 
     .config-image {
-      min-width: 200px;
-      min-height: 200px;
       text-align: center;
 
       img {
-        width: auto;
-        height: 100%;
-        max-height: 200px;
+        width: 45%;
+        height: auto;
       }
     }
     $grey: rgba(168,173,177,1);
@@ -129,13 +133,16 @@
       position: relative;
       top: $padding;
     }
-    .specs-table-item.ratings ul {margin:0px !important;}
+    .specs-table-item.ratings ul {
+      margin:0px !important;
+      line-height:12px;
+    }
     .specs-table-item.ratings li{
       display: inline-block;
       width: 13px;
       height: 20px;
       background: rgba(168,173,177,1);
-      margin: 5px 3px 0 0;
+      margin: 0 3px 0 0;
       padding: 0;
       background-image: none;
       list-style-type:square;
@@ -144,26 +151,40 @@
       .specs-table-item ul li {
         width: 13px !important;
         height: 20px !important;
-        margin: 5px 3px 0 0 !important;
+        margin: 0 3px 0 0 !important;
       }
     }
     .specs-table {
       min-width: 50%;
       font-size: 18px;
       line-height: 22px;
-      border: 1px solid $lightGrey;
+      border: none;
       border-radius: 0;
 
       .specs-table-item,
       .product-spec-image {
         font-size: 20px;
         line-height: 20px;
-        border-bottom: 1px solid $lightGrey;
+        border: solid #d2d2d2;
+        border-width: 0 1px 1px 1px;
+        // border-bottom: 1px solid $lightGrey;
+        &:nth-child(2n) {
+          background-color: #f6f6f6;
+        }
+        &:nth-child(odd) {
+          background: $white;
+        }
+        &:first-of-type {
+          background-color: $white;
+          border-top-width: 1px;
+        }
         > .col-md-6 {
           padding: .5rem 1rem;
+          font-size: 1rem;
           & ~ .col-md-6 {
             padding-top: 0;
             text-align: right;
+            border-left: 1px solid #d2d2d2;
           }
           @media screen and (min-width: $medium) {
             padding: 1rem;
@@ -185,18 +206,30 @@
           font-size: 1rem;
           margin-left: .8rem;
           color: $primaryColor;
+          font-weight: 300;
+          -moz-osx-font-smoothing: grayscale;
+          text-rendering: optimizeLegibility;
+          font-smooth: always;
+          -webkit-font-smoothing : subpixel-antialiased;
+        }
+        &.ratings {
+          @media screen and (min-width: $medium) {
+            & ~ .col-md-6 {
+              padding-top: .75rem 1rem;
+            }
+
+          }
         }
       }
       .product-spec-image {
         text-align: center;
         img {
-          max-height: 20rem;
-          max-width: 100%;
+          height: auto;
+          width: 45%;
         }
       }
     }
   }
-
 
   .info-popopver {
     &.md-tooltip.md-theme-default {
@@ -218,6 +251,16 @@
           white-space: normal;
           line-height: 1.2rem;
         }
+      }
+    }
+  }
+
+
+  .info-popopver.specs {
+    &.md-tooltip.md-theme-default {
+      .inner-popover {
+        width: auto;
+        max-width: 20rem;
       }
     }
   }

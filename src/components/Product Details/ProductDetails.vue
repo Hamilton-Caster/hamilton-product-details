@@ -1,12 +1,29 @@
 <template>
   <md-empty-state
-    v-if="dataLoaded && !productDetails.IsValidPart">
-    <font-awesome-icon class="md-empty-state-icon" :icon="['fad', 'sad-tear']" />
+    v-if="error != null">
+    <font-awesome-icon class="md-empty-state-icon" :icon="['fad', 'face-sad-tear']" />
+    <strong class="md-empty-state-label">An error has occurred</strong>
+    <p class="md-empty-state-description">
+      <span>{{ error }}</span><br>Please try again later
+    </p>
+    <md-button
+      @click="goHome"
+      class="md-raised">
+      Go Hamilton Home Page
+    </md-button>
+  </md-empty-state>
+  <md-empty-state
+    v-else-if="dataLoaded && !productDetails.IsValidPart">
+    <font-awesome-icon class="md-empty-state-icon" :icon="['fad', 'face-sad-tear']" />
     <strong class="md-empty-state-label">Part Not Found</strong>
-    <p class="md-empty-state-description">The part you are looking is not here. You can use the Product Finder to search all parts.</p>
+    <p class="md-empty-state-description">
+      The part you are looking is not here. You can use the Product Finder to search all parts.
+    </p>
     <md-button
       @click="goToProductFinder"
-      class="md-raised">Go To Product Finder</md-button>
+      class="md-raised">
+      Go To Product Finder
+    </md-button>
   </md-empty-state>
   <section
     v-else
@@ -16,15 +33,21 @@
       v-if="!showSpinner">
       <contact-modal
         :cad-user.sync="cadUser"
-        :display-modal.sync="displayCADModal" />
+        :display-modal.sync="displayCADModal"
+        @registration-confirmed="onRegistrationConfirmed"/>
       <section class="container product-header-wrapper">
         <product-header
+          ref="productHeader"
           class="row"
           :cad-user="cadUser"
           :product-details="productDetails"
           :parts-list="selectedPartsList"
           :is-valid-cad-user="isValidCadUser"
-          @display-cad-modal="displayCADModal = $event"/>
+          :product-type="productDetails.ProductType"
+          :selected-attributes="selectedAttrs"
+          :is-search-disabled="searchDisabled"
+          :has-product-config-attributes="productDetails.HasProductConfigAttributes"
+          @display-cad-modal="displayCADModal = $event" />
       </section>
       <!-- TODO: Bunch of other stuff goes here -->
       <section class="container-fluid part-options-section">
@@ -43,7 +66,9 @@
             :has-product-config-attributes="productDetails.HasProductConfigAttributes"
             :product-type="productDetails.ProductType"
             :wheel-image-url="productDetails.Wheel_ImageURL"
-            :product-specifications="productDetails.Specifications" />
+            :product-specifications="productDetails.Specifications"
+            :search-disabled.sync="searchDisabled"
+            :selected-attrs.sync="selectedAttrs"/>
           <wheel-characteristics
             v-if="productDetails.WheelCharacteristics != null"
             :show-wheel-type-image="productDetails.Show_WheelTypeImage"
@@ -59,7 +84,6 @@
 
 <script>
 import { getDetailsAPI, getIsValidCADUser} from '../../api'
-import utilities from '../../utilities/helpers'
 import Spinner from '../Utilities/Spinner'
 import ProductHeader from './ProductHeader'
 import ProductCharts from './ProductCharts'
@@ -68,8 +92,13 @@ import WheelCharacteristics from './WheelCharacteristics'
 import ContactModal from './ContactModal'
 import PartOptions from './PartOptions'
 
+const href = window.location.href
+
 const urlParams = new URLSearchParams(window.location.search)
-const partIdQueryParam = urlParams.get('PartId')
+// Check for both variations of part Id in query param
+const partIdQueryParam = urlParams.get('PartId') || urlParams.get('PartID')
+// Check for both variations of part Id in URL
+const partIdUrlParam = href.split('PartID/')[1] || href.split('PartId/')[1]
 
 export default {
   name: 'product-details',
@@ -110,11 +139,14 @@ export default {
         State: null,
         Zipcode: null
       },
-      partId: partIdQueryParam,
+      partId: partIdUrlParam || partIdQueryParam, // check for query param or url param
       productDetails: null,
       productTitle: '',
+      searchDisabled: true,
+      selectedAttrs: [],
       showSpinner: true,
-      selectedPartsList: []
+      selectedPartsList: [],
+      error: null
     }
   },
   computed: {
@@ -133,6 +165,7 @@ export default {
         this.showSpinner = false
         this.dataLoaded = true
       })
+      .catch(err => this.error = err)
     },
     validateUser () {
       getIsValidCADUser()
@@ -142,6 +175,12 @@ export default {
     },
     goToProductFinder () {
       window.location.href = '/Configurator-Search-Results'
+    },
+    goHome () {
+      window.location.href = '/'
+    },
+    onRegistrationConfirmed () {
+      this.$refs.productHeader.onDownloadCadClick()
     }
   },
   created () {
@@ -184,6 +223,7 @@ export default {
         margin: 2rem 0;
         flex-wrap: wrap;
         justify-content: center;
+        --flex-grow: 0;
 
         > div {
           flex: var(--flex-grow) 1 var(--columnWidth);
@@ -199,7 +239,10 @@ export default {
         }
       }
       @media screen and (min-width: $x-large) {
-        --columnWidth: 33%;
+        --columnWidth: 40%;
+        &.has-charts {
+          --columnWidth: 33%;
+        }
       }
       @media screen and (min-width: $xx-large) {
         flex-wrap: nowrap;
@@ -280,6 +323,14 @@ export default {
 
     &:first-of-type {
       margin-left: 0;
+    }
+  }
+
+  .md-theme-default {
+    .breadcrumb li a {
+      &:not(.md-button) {
+        color: $white;
+      }
     }
   }
 </style>

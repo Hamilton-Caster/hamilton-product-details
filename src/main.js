@@ -33,13 +33,12 @@ Vue.component(FontAwesomeIcon.name, FontAwesomeIcon)
 Vue.component('product-details-app', require('./App').default)
 
 // Hide buggy error for vue-material library
-Vue.config.errorHandler = (err, vm, info) => {
+Vue.config.errorHandler = (err) => {
     // Show any error but this one
   if (err.message !== "Cannot read property 'badInput' of undefined") {
     console.error(err)
   }
 }
-console.log('app', ProductDetailsApp)
 new Vue({
   render: h => h(ProductDetailsApp)
 }).$mount('#productDetailApp')

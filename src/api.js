@@ -28,7 +28,7 @@ const addToCart = function (shoppingCart, svc, antiForgery) {
 
 const CatalogDetailLink = `${rootPath}/GetPartDetails`
 
-const getDetailsAPI = function (partId, detailLink) {
+const getDetailsAPI = function (partId) {
   // let headers = getHeaders(svc, antiForgery)
   return axios.get(`${CatalogDetailLink}?partId=${partId}`)
     .then(res => res.data)

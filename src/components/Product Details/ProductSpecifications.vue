@@ -1,13 +1,6 @@
 <template>
   <div class="product-specifications">
-    <h2>Product Specifications</h2>
-    <md-button
-      class="md-primary"
-      v-if="hasProductConfigAttributes"
-      @click="onSearchParts">
-      <font-awesome-icon :icon="['fas', 'search']" />
-      Search Similar Parts
-    </md-button>
+    <h2 class="product-spec-title">Product Specifications</h2>
     <specs-table
       :wheel-image-url="wheelImageUrl"
       :attributes-list="productSpecifications.SpecificationAttributes" />
@@ -16,7 +9,7 @@
 
 <script>
 import SpecsTable from '../Shared/SpecsTable'
-import { ConfiguratorResultsPage, ScrollToResults } from '../enums'
+import { ConfiguratorResultsPage, ScrollToResults, ProductTypes } from '../enums'
 import { getProductConfiguratorAttributes } from '../../api'
 
 export default {
@@ -34,34 +27,28 @@ export default {
     },
     wheelImageUrl: {
       type: String
+    },
+    selectedAttrs: {
+      type: Array,
+      default: () => []
+    },
+    searchDisabled: {
+      type: Boolean,
+      default: true
     }
   },
   data () {
     return {
       configuratorList: null,
+      isSearchDisabled: true,
       selectedAttributes: [],
+      ProductTypes
     }
   },
   methods: {
-    onSearchParts () {
-      this.setSessionStorage(this.productType, this.selectedAttributes)
-    },
-    setSessionStorage (ConfiguratorType, selectedAttributes) {
-      sessionStorage.setItem(ScrollToResults, JSON.stringify(true))
-      sessionStorage.setItem('ConfiguratorType', JSON.stringify(ConfiguratorType))
-      if (selectedAttributes != null) {
-        let key = `SelectedAttributes_${ConfiguratorType}`
-        if (selectedAttributes.length > 0) {
-          sessionStorage.setItem(key, JSON.stringify(selectedAttributes))
-        } else {
-          sessionStorage.setItem(key, JSON.stringify([]))
-        }
-      }
-      this.goToResultsPage()
-    },
     setupFilters () {
       let configuratorParams = {
-        ConfiguratorType: this.productType,
+        ConfiguratorType: ProductTypes.getKey(ProductTypes.Casters),
         AttributeValues: [],
         CurrentPageNumber: 1,
         SortBy: '',
@@ -84,26 +71,34 @@ export default {
     },
     addFilters (item, configuratorList) {
       let selectedGroup = null
-      let attributeGroup = configuratorList.find(group => {
-        selectedGroup = group.GROUP_ATTRIBUTES.find(attribute => attribute.ID === item.ProductConfiguratorID)
-        return selectedGroup
-      })
-      console.log('addFilters :: SelectedAttribute', attributeGroup)
-      console.log('addFilters :: selectedGroup', selectedGroup)
-      let sel
+      for (let i = 0; i < configuratorList.length; i++) {
+        selectedGroup = configuratorList[i].GROUP_ATTRIBUTES.find(attribute => attribute.ATTRIBUTE_ID === item.AttributeID)
+        if (selectedGroup != null) {
+          break
+        }
 
-      this.selectedAttributes.push({
-        ID: selectedGroup.ID,
-        ATTRIBUTE_ID: selectedGroup.ATTRIBUTE_ID,
-        ATTRIBUTE_VALUES: [selectedGroup.ATTRIBUTE_VALUES.find(listItem => listItem.LINE_NO === item.ProductConfiguratorLineNumber)],
-        label: selectedGroup.label,
-        DISPLAY_TYPE: selectedGroup.DISPLAY_TYPE,
-        TYPE: selectedGroup.TYPE,
-        name: selectedGroup.NAME
-      })
-    },
-    goToResultsPage () {
-      window.location.href = `${location.origin}/${ConfiguratorResultsPage}`
+      }
+      // let attributeGroup = configuratorList.find(group => {
+      //   console.log('attributeGroup :: group, item', group, item)
+      //   selectedGroup = group.GROUP_ATTRIBUTES.find(attribute => attribute.ATTRIBUTE_ID === item.AttributeID)
+      //   return selectedGroup
+      // })
+
+      if (selectedGroup != null) {
+        this.selectedAttributes.push({
+          ID: selectedGroup.ID,
+          ATTRIBUTE_ID: selectedGroup.ATTRIBUTE_ID,
+          ATTRIBUTE_VALUES: [selectedGroup.ATTRIBUTE_VALUES.find(listItem => listItem.LINE_NO === item.ProductConfiguratorLineNumber)],
+          label: selectedGroup.CAPTION,
+          // DISPLAY_TYPE: selectedGroup.DISPLAY_TYPE,
+          // TYPE: selectedGroup.TYPE,
+          name: selectedGroup.NAME
+        })
+        this.$emit('update:selected-attrs', this.selectedAttributes)
+      }
+      this.isSearchDisabled = this.selectedAttributes.length === 0
+      this.$emit('update:search-disabled', this.selectedAttributes.length === 0)
+
     }
   },
   created () {
@@ -117,15 +112,24 @@ export default {
 </script>
 
 <style lang="scss">
+  @import "../../assets/variables";
+
   .product-specifications {
     display: flex;
     flex-direction: column;
-    .md-button {
-      justify-self: flex-end;
-      margin: -.2rem 0 1rem;
-      height: 3rem;
-      .md-button-content {
-        font-size: 1rem;
+    .product-spec-title {
+      display: flex;
+      justify-content: space-between;
+      flex-direction: column;
+      @media screen and (min-width: $large) {
+        flex-direction: row;
+      }
+    }
+
+    .product-search-button {
+      &.disabled {
+        opacity: .7;
+        cursor: default;
       }
     }
    }

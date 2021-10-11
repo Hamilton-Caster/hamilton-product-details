@@ -11,7 +11,6 @@
       </div>
       <h3 v-html="partOption.Description">
       </h3>
-
     </div>
     <div class="option-lower">
       <div class="part-details">
@@ -27,20 +26,20 @@
         </div>
       </div>
       <div
-      v-if="isValid"
-      class="part-option-checkbox md-layout md-gutter">
-      <div
-        class="md-layout-item md-size-100"
-        @click.stop="onOptionClick">
-        <md-field
-          class="checkbox">
-          <md-checkbox
-            v-model="isSelected">
-            Include with {{ productId }}
-          </md-checkbox>
-        </md-field>
+        class="part-option-checkbox md-layout md-gutter">
+        <div
+          v-if="isValid"
+          class="md-layout-item md-size-100"
+          @click.stop="onOptionClick">
+          <md-field
+            class="checkbox">
+            <md-checkbox
+              v-model="isSelected">
+              Include with {{ productId }}
+            </md-checkbox>
+          </md-field>
+        </div>
       </div>
-    </div>
     </div>
   </div>
 </template>
@@ -108,7 +107,7 @@ export default {
 
   .part-option {
     border: 1px solid #b4b4b4;
-    padding: 1rem;
+    padding: 0 1rem;
     background: #fff;
     width: 100%;
     transition: background .2s ease-in-out;
@@ -146,18 +145,16 @@ export default {
 
       h3 {
         line-height: 1.25;
-        font-size: 1.25rem;
-        margin-bottom: .5rem;
+        font-size: 1rem;
+        margin: 1rem 0 .7rem;
+        text-align: center;
       }
 
       .option-image-wrap {
-        width: 6rem;
-        height: 6rem;
-        float: right;
-        display: inline-block;
-
+        text-align: center;
         img {
-          width: 100%;
+          width: 80%;
+          max-width: 14.5rem;
         }
       }
     }
@@ -169,7 +166,6 @@ export default {
       flex-direction: column;
 
       .part-details {
-        padding-bottom: 1rem;
         text-align: center;
       }
       .price-label {
@@ -198,6 +194,7 @@ export default {
         margin-left: 0;
         margin-right: 0;
         align-self: center;
+        height: 3.5rem;
 
         .checkbox.md-field {
           display: block;

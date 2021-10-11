@@ -275,19 +275,23 @@ export default {
   },
   methods: {
     onRegister () {
-      console.log('onRegister', this.cadUser)
       addCADUser(this.cadUser)
         .then(res => {
-          console.log('validateUser :: res', res)
           this.showLookupError = !res.IsValidCADUser
           this.$emit('update:cad-user', res)
           this.noteMessage = res.IsValidCADUser ?  'New registration successful!' : ErrorMessage
           this.noteType = res.IsValidCADUser ? 'success' : 'error'
           this.showNote = true
-          setTimeout(() => {
-            this.showNote = false
-          }, 5000)
-
+          if (res.IsValidCADUser) {
+            setTimeout(() => {
+              this.showModal = false
+              this.$emit('registration-confirmed')
+            }, 3000)
+          } else {
+            setTimeout(() => {
+              this.showNote = false
+            }, 5000)
+          }
         })
         .catch(res => {
           this.noteMessage = res
@@ -299,10 +303,8 @@ export default {
         })
     },
     onUpdate () {
-      console.log('onRegister', this.cadUser)
       editCADUser(this.cadUser)
         .then(res => {
-          console.log('validateUser :: res', res)
           this.$emit('update:cad-user', res)
           this.noteMessage = res.IsValidCADUser ?  'Profile Updated!' : ErrorMessage
           this.noteType = res.IsValidCADUser ? 'success' : 'error'
@@ -322,10 +324,8 @@ export default {
         })
     },
     onSearch () {
-      console.log('onSearch :: this.existingName', this.existingName)
       validateCADUser(this.existingName, this.existingEmail)
         .then(res => {
-          console.log('validateUser :: res', res)
           this.showLookupError = !res.IsValidCADUser
           this.$emit('update:cad-user', res)
           if (res.IsValidCADUser) {
@@ -363,8 +363,6 @@ export default {
     },
     onModalOpened () {
       this.isMobileSize = window.matchMedia('(max-width: 769px)').matches
-
-      console.log('onModalOpened :: `-${window.scrollY}px`', `-${window.scrollY}px`)
       if (this.isMobileSize) {
         setTimeout(function () {
           document.body.style.top = `-${window.scrollY}px`

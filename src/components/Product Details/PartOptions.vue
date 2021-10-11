@@ -9,7 +9,7 @@
           :key="partOption.PartID"
           :part-option="partOption"
           :selected-part-options.sync="selectedPartOptions"
-          :product-id="productId"/>
+          :product-id="productId" />
       </vue-slick-carousel>
     </div>
   </div>
@@ -119,19 +119,17 @@ export default {
   .part-options-wrapper {
     background-color: $lightGreyBg;
     padding: 1rem;
-    //width: calc(100% + 1.96rem);
-    //margin: 0 -1rem;
     width: calc(100% + 3.9rem);
     margin: 0 -2rem;
     @media screen and (min-width: $medium) {
-      padding: 3rem 1rem 3rem;
+      padding: 1.3rem 1rem 1.5rem;
     }
 
     > h2 {
       text-align: center;
       padding-bottom: 1rem;
       @media screen and (min-width: $medium) {
-        padding-bottom: 3rem;
+        padding-bottom: 1.5rem;
       }
     }
 

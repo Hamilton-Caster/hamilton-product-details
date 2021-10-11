@@ -3,17 +3,12 @@
     v-if="moduleReady"
     :module-id="moduleId"
     :edit-mode="editMode"
-    :detail-link="detailLink"/>
+    :detail-link="detailLink" />
 </template>
 
 <script>
 import ProductDetails from './components/Product Details/ProductDetails.vue'
 import { Enumeration } from './utilities/enums'
-
-// TODO: update to name of module
-const DisplayType = new Enumeration({
-  ProductDetails: 'ProductDetails_ProductDetails'
-})
 
 export default {
   name: 'product-details-app',
@@ -32,14 +27,12 @@ export default {
     detailLink: null
   }),
   mounted () {
-    console.log('test load')
     if (this.$el && this.$el.parentNode) {
       // get the module id from the parent div to pass to apis for security
       this.moduleId = parseInt(this.$el.parentNode.id.replace('app-', ''))
       // this.moduleUsage = this.$el.parentNode.dataset.moduleUsage
       this.moduleReady = true
       this.detailLink = this.$el.parentNode.dataset.detailLink
-      console.log('mounted :: this.$el.parentNode.dataset.commodityId', this.$el.parentNode.dataset.commodityId)
 
       this.$el.parentNode.classList.add('product-details-module-wrap')
 

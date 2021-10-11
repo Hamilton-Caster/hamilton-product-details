@@ -4,7 +4,7 @@
     <specs-table
       :wheel-image-url="wheelImageUrl"
       :show-wheel-type-image="showWheelTypeImage"
-      :attributes-list="wheelCharacteristics.WheelCharacteristics"/>
+      :attributes-list="wheelCharacteristics.WheelCharacteristics" />
   </div>
 </template>
 

@@ -8,9 +8,9 @@
       <span class="sub-head">
         Load Capacity (lbs.): <small>{{ productDetails.LoadCapacity }}</small>
       </span>
-      <span class="sub-head">
-        Availability: <small>{{ productDetails.Availability }}</small>
-      </span>
+      <div class="sub-head">
+        Availability: <div v-html="productDetails.Availability" class="small"></div>
+      </div>
     </div>
     <product-image
       class="col-md-6"
@@ -23,38 +23,65 @@
       <span class="sub-head hide-mobile">
         Load Capacity (lbs.): <small>{{ productDetails.LoadCapacity }}</small>
       </span>
-      <span class="sub-head hide-mobile">
-        Availability: <small>{{ productDetails.Availability }}</small>
-      </span>
+      <div class="sub-head hide-mobile">
+        Availability: <div v-html="productDetails.Availability" class="small"></div>
+      </div>
       <p class="product-description">
         <span v-html="productDetails.Description"></span>
       </p>
-      <md-button
-        v-if="productDetails.CADDrawingValue === CADDrawingTypes.Local && productDetails.CADVersionAvailable"
-        class="md-outline"
-        @click="onDownloadCadClick">
-        <font-awesome-icon :icon="['fas', 'download']" />
-        Download CAD
-      </md-button>
+      <div style="display:inline-block;">
+        <md-tooltip
+          v-if="isCadDownloading"
+          class="info-popopver"
+          md-direction="top">
+          <div class="inner-popover">
+            <span
+              class="popover-description">
+              Your file is being generated and will begin downloading soon.
+            </span>
+          </div>
+        </md-tooltip>
+
+        <md-button
+          v-if="productDetails.CADDrawingValue === CADDrawingTypes.Local && productDetails.CADVersionAvailable"
+          class="md-outline"
+          @click="onDownloadCadClick">
+          <font-awesome-icon :icon="['fas', 'download']" />
+          Download CAD (step file)
+        </md-button>
+      </div>
       <md-button
         id="lbCAD"
         class="md-outline"
         :href="emailLink + productDetails.BasePartID">
         <font-awesome-icon :icon="['fas', 'paper-plane']" />
-        Request CAD Format
+        Request CAD File
       </md-button>
-      <md-button
-        v-if="productDetails.IsValidPart"
-        class="md-outline"
-        @click="onDownloadPDFClick">
-        <font-awesome-icon :icon="['fas', 'file-pdf']" />
-        PDF Datasheet
-      </md-button>
+      <div style="display:inline-block;">
+        <md-tooltip
+          v-show="isPDFDownloading"
+          class="info-popopver"
+          md-direction="top">
+          <div class="inner-popover">
+            <span
+              class="popover-description">
+              Your datasheet is being generated and will begin downloading soon.
+            </span>
+          </div>
+        </md-tooltip>
+        <md-button
+          v-if="productDetails.IsValidPart"
+          class="md-outline"
+          @click="onDownloadPDFClick">
+          <font-awesome-icon :icon="['fas', 'file-pdf']" />
+          PDF Datasheet
+        </md-button>
+      </div>
       <md-button
         v-if="isValidCadUser"
         class="md-outline"
         @click="onModifyPreferences">
-        <font-awesome-icon :icon="['fas', 'cog']" />
+        <font-awesome-icon :icon="['fas', 'gear']" />
         Download Preferences
       </md-button>
       <div class="price">
@@ -101,6 +128,22 @@
           </md-button>
         </div>
       </div>
+      <div class="finder-button">
+        <md-button
+          class="md-outline md-theme-default product-search-button"
+          :class="{'disabled': isSearchDisabled}"
+          :disabled="isSearchDisabled"
+          v-if="hasProductConfigAttributes"
+          @click="onSearchParts">
+          <font-awesome-icon :icon="['fas', 'magnifying-glass']" />
+          <span v-if="productType === ProductTypes.getKey(ProductTypes.Casters)">
+            Find Similar Casters
+          </span>
+          <span v-else>
+            Find Casters using this Wheel
+          </span>
+        </md-button>
+      </div>
     </div>
   </header>
 </template>
@@ -108,10 +151,8 @@
 <script>
 import ProductImage from './ProductImage'
 import { addToCart } from '../../api'
-import {CADDrawingTypes, DownloadFormats} from '../enums'
+import {CADDrawingTypes, ConfiguratorResultsPage, DownloadFormats, ProductTypes, ScrollToResults} from '../enums'
 import helpers from '../../utilities/helpers'
-
-let cdsViewer = cds
 
 export default {
   name: 'product-header',
@@ -127,9 +168,24 @@ export default {
     partsList: {
       type: Array
     },
+    hasProductConfigAttributes: {
+      type: Boolean,
+      default: false
+    },
     isValidCadUser: {
       type: Boolean,
       default: false
+    },
+    productType: {
+      type: String
+    },
+    isSearchDisabled: {
+      type: Boolean,
+      default: true
+    },
+    selectedAttributes: {
+      type: Array,
+      default: () => []
     }
   },
   data () {
@@ -137,8 +193,11 @@ export default {
       emailLink: 'mailto:cad@hamiltoncaster.com?Subject=Request CAD for Part ID ',
       productQuantity: 1,
       CADDrawingTypes,
+      isCadDownloading: false,
+      isPDFDownloading: false,
       selectedDownloadFormat: null,
-      desiredFormatOptions: DownloadFormats
+      desiredFormatOptions: DownloadFormats,
+      ProductTypes
     }
   },
   computed: {
@@ -172,7 +231,6 @@ export default {
   watch: {
     cadUser: {
       handler: function (cadUser) {
-        console.log('handler :: cadUser.DownloadFormats', cadUser.DownloadFormats)
         if (cadUser.DownloadFormats !== '' || cadUser.DownloadFormats != null) {
           this.selectedDownloadFormat = cadUser.DownloadFormats
         }
@@ -186,21 +244,24 @@ export default {
     },
     onDownloadCadClick () {
       const uri = `//${this.productDetails.CADVersionURL}`
-      console.log('onDownloadCadClick :: uri', uri)
       if (this.isValidCadUser) {
         if (this.productDetails.CADDrawingValue === CADDrawingTypes.Local) {
+          this.isCadDownloading = true
           helpers.downloadFile(uri)
+          setTimeout(() => {
+            this.isCadDownloading = false
+          }, 6000)
         }
       } else {
         this.$emit('display-cad-modal', true)
       }
     },
     onDownloadPDFClick () {
+      this.isPDFDownloading = true
       let host = process.env.NODE_ENV === 'development' ? 'https://beta.hamiltoncaster.com' : ''
       let partId = this.productDetails.BasePartID
       let pdfUrl = '/DesktopModules/AcuitiSolutions/CatalogDetail/API/List/GetDataSheetPDF'
       let filePath = `${host}${pdfUrl}?partId=${partId}`
-      console.log('onDownloadPDFClick :: filePath', filePath)
 
       let a = document.createElement('A');
       a.href = filePath;
@@ -208,6 +269,10 @@ export default {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+      setTimeout(() => {
+        this.isPDFDownloading = false
+      }, 6000)
+
     },
     addToProject () {
       let svc = this.$parent.moduleService[`svc-${this.$parent.moduleId}`]
@@ -219,7 +284,27 @@ export default {
         window.location.href = res
       })
 
-    }
+    },
+    onSearchParts () {
+      this.setSessionStorage(ProductTypes.getKey(ProductTypes.Casters), this.selectedAttributes)
+    },
+    setSessionStorage (ConfiguratorType, selectedAttributes) {
+      sessionStorage.setItem(ScrollToResults, JSON.stringify(true))
+      sessionStorage.setItem('ConfiguratorType', JSON.stringify(ConfiguratorType))
+      if (selectedAttributes != null) {
+        let key = `SelectedAttributes_${ConfiguratorType}`
+        if (selectedAttributes.length > 0) {
+          sessionStorage.setItem(key, JSON.stringify(selectedAttributes))
+        } else {
+          sessionStorage.setItem(key, JSON.stringify([]))
+        }
+      }
+      this.goToResultsPage()
+    },
+    goToResultsPage () {
+      window.location.href = `${location.origin}/${ConfiguratorResultsPage}`
+    },
+
   },
   created () {
   },
@@ -248,8 +333,14 @@ export default {
       display: block;
       line-height: 2.5rem;
 
-      small {
+      small,
+      .small {
         font-weight: normal;
+        display: inline-block;
+      }
+      a {
+        color: $primaryColor;
+        text-decoration: underline;
       }
     }
     .product-description {
@@ -315,6 +406,29 @@ export default {
           align-items: center;
         }
 
+      }
+    }
+    .product-search-button {
+      &.md-button {
+        justify-self: flex-end;
+        margin: 1rem 0 0;
+        height: 2.45rem;
+        padding: 0rem .625rem;
+        @media screen and (min-width: $large) {
+          margin: 2rem 0 1rem;
+        }
+
+        @media screen and (min-width: $x-large) {
+          padding: 0rem 1.625rem;
+        }
+
+        .md-button-content {
+          font-size: 1rem;
+        }
+      }
+      &.disabled {
+        opacity: .7;
+        cursor: default;
       }
     }
   }

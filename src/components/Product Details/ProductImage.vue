@@ -6,7 +6,9 @@
       <img
         :src="currentProductImage"
         :alt="productDetails.BasePartID">
-      <p class="image-caption" v-if="productDetails.FeaturedImageCaption">{{ productDetails.FeaturedImageCaption}}</p>
+      <p class="image-caption" v-if="productDetails.FeaturedImageCaption">
+        {{ productDetails.FeaturedImageCaption }}
+      </p>
     </div>
   </div>
 </template>
@@ -53,7 +55,7 @@ export default {
       min-height: $mobileImageSize;
       margin-bottom: 2rem;
       height: $mobileImageSize;
-      overflow: hidden;
+
       @media screen and (min-width: $medium) {
         height: $standardImageSize;
       }
