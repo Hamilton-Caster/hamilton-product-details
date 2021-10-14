@@ -3,7 +3,7 @@
     <div class="product-summary hide-desktop">
       <h1 class="mobile-title">
         <small>Part Details for</small>
-        <span v-html="productDetails.BasePartID"></span>
+        <span v-html="productDetails.PartID"></span>
       </h1>
       <span class="sub-head">
         Load Capacity (lbs.): <small>{{ productDetails.LoadCapacity }}</small>
@@ -18,7 +18,7 @@
     <div class="product-summary col-md-6">
       <h1 class="hide-mobile">
         <small>Part Details for</small>
-        <span v-html="productDetails.BasePartID"></span>
+        <span v-html="productDetails.PartID"></span>
       </h1>
       <span class="sub-head hide-mobile">
         Load Capacity (lbs.): <small>{{ productDetails.LoadCapacity }}</small>
@@ -30,17 +30,18 @@
         <span v-html="productDetails.Description"></span>
       </p>
       <div style="display:inline-block;">
-        <md-tooltip
-          v-if="isCadDownloading"
-          class="info-popopver"
-          md-direction="top">
+        <md-snackbar
+          md-persistent
+          :md-position="position"
+          :md-duration="duration"
+          :md-active.sync="isCadDownloading">
           <div class="inner-popover">
             <span
               class="popover-description">
               Your file is being generated and will begin downloading soon.
             </span>
           </div>
-        </md-tooltip>
+        </md-snackbar>
 
         <md-button
           v-if="productDetails.CADDrawingValue === CADDrawingTypes.Local && productDetails.CADVersionAvailable"
@@ -53,22 +54,23 @@
       <md-button
         id="lbCAD"
         class="md-outline"
-        :href="emailLink + productDetails.BasePartID">
+        :href="emailLink + productDetails.PartID">
         <font-awesome-icon :icon="['fas', 'paper-plane']" />
         Request CAD File
       </md-button>
       <div style="display:inline-block;">
-        <md-tooltip
-          v-show="isPDFDownloading"
-          class="info-popopver"
-          md-direction="top">
+        <md-snackbar
+          md-persistent
+          :md-position="position"
+          :md-duration="duration"
+          :md-active.sync="isPDFDownloading">
           <div class="inner-popover">
             <span
               class="popover-description">
               Your datasheet is being generated and will begin downloading soon.
             </span>
           </div>
-        </md-tooltip>
+        </md-snackbar>
         <md-button
           v-if="productDetails.IsValidPart"
           class="md-outline"
@@ -196,6 +198,7 @@ export default {
       isCadDownloading: false,
       isPDFDownloading: false,
       selectedDownloadFormat: null,
+      duration: 6000,
       desiredFormatOptions: DownloadFormats,
       ProductTypes
     }
@@ -259,7 +262,7 @@ export default {
     onDownloadPDFClick () {
       this.isPDFDownloading = true
       let host = process.env.NODE_ENV === 'development' ? 'https://beta.hamiltoncaster.com' : ''
-      let partId = this.productDetails.BasePartID
+      let partId = this.productDetails.PartID
       let pdfUrl = '/DesktopModules/AcuitiSolutions/CatalogDetail/API/List/GetDataSheetPDF'
       let filePath = `${host}${pdfUrl}?partId=${partId}`
 
