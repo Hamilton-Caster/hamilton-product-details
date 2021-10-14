@@ -5,7 +5,7 @@
       class="image-wrap">
       <img
         :src="currentProductImage"
-        :alt="productDetails.BasePartID">
+        :alt="productDetails.PartID">
       <p class="image-caption" v-if="productDetails.FeaturedImageCaption">
         {{ productDetails.FeaturedImageCaption }}
       </p>
