@@ -71,7 +71,7 @@ export default {
         if (isSelected) {
           partOptionsList.push({
             partId: this.partOption.PartID,
-            unitPrice: parseInt(this.partOption.UnitPrice)
+            unitPrice: (Math.round((Number.parseFloat(this.partOption.UnitPrice) + Number.EPSILON) * 100) / 100).toFixed(2)
           })
         } else {
           partOptionsList = partOptionsList.filter(option => option.partId !== this.partOption.PartID)
@@ -82,7 +82,8 @@ export default {
   },
   computed: {
     displayPrice () {
-      return this.partOption.UnitPrice !== 0 ? `$${this.partOption.UnitPrice}` : 'Please Call for Pricing'
+      let unitPrice = (Math.round((Number.parseFloat(this.partOption.UnitPrice) + Number.EPSILON) * 100) / 100).toFixed(2)
+      return unitPrice !== '0' ? `$${unitPrice}` : 'Please Call for Pricing'
     },
     isValid () {
       return this.partOption.UnitPrice !== 0

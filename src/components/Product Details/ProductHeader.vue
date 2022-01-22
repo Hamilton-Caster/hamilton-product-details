@@ -208,7 +208,7 @@ export default {
       let optionsList = this.partsList.map(part => ({
         PartID: part.partId,
         Quantity: parseInt(this.productQuantity),
-        UnitPrice: parseFloat(part.unitPrice).toFixed(2)
+        UnitPrice: part.unitPrice
       }))
       return optionsList
     },
@@ -307,7 +307,6 @@ export default {
     goToResultsPage () {
       window.location.href = `${location.origin}/${ConfiguratorResultsPage}`
     },
-
   },
   created () {
   },
