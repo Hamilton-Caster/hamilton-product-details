@@ -83,7 +83,7 @@ export default {
   computed: {
     displayPrice () {
       let unitPrice = (Math.round((Number.parseFloat(this.partOption.UnitPrice) + Number.EPSILON) * 100) / 100).toFixed(2)
-      return unitPrice !== '0' ? `$${unitPrice}` : 'Please Call for Pricing'
+      return unitPrice !== '0.00' ? `$${unitPrice}` : 'Please Call for Pricing'
     },
     isValid () {
       return this.partOption.UnitPrice !== 0
