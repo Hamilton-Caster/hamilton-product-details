@@ -16,121 +16,123 @@
       <md-tabs
         @md-changed="onTabsChanged">
         <md-tab :md-label="registrationTabTitle">
-          <p>
-            To minimize abuse, a one-time registration is required before you can view or download CAD drawings.
-            Hamilton takes your privacy very seriously. Hamilton does not sell or rent your contact information to
-            anyone.
-          </p>
-          <fieldset class="md-layout md-gutter">
-            <div class="md-layout-item md-small-size-100 md-size-50">
-              <md-field>
-                <label
-                  for="downloadProfileName">
-                  Name
-                </label>
-                <md-input
-                  id="downloadProfileName"
-                  v-model="cadUser.FullName" />
-              </md-field>
-            </div>
-            <div class="md-layout-item md-small-size-100 md-size-50">
-              <md-field>
-                <label
-                  for="downloadProfileCompanyName">
-                  Company Name
-                </label>
-                <md-input
-                  id="downloadProfileCompanyName"
-                  v-model="cadUser.Company" />
-              </md-field>
-            </div>
-            <div class="md-layout-item md-size-100 md-small-size-100">
-              <md-field>
-                <label
-                  for="downloadProfileAddress">
-                  Address
-                </label>
-                <md-input
-                  id="downloadProfileAddress"
-                  v-model="cadUser.Address" />
-              </md-field>
-            </div>
-            <div class="md-layout-item md-size-50 md-small-size-100">
-              <md-field>
-                <label
-                  for="downloadProfileCity">
-                  City
-                </label>
-                <md-input
-                  id="downloadProfileCity"
-                  v-model="cadUser.City" />
-              </md-field>
-            </div>
-            <div class="md-layout-item md-size-30 md-small-size-100">
-              <md-field>
-                <label
-                  for="downloadProfileState">
-                  State
-                </label>
-                <md-input
-                  id="downloadProfileState"
-                  v-model="cadUser.State" />
-              </md-field>
-            </div>
-            <div class="md-layout-item md-size-20 md-small-size-100">
-              <md-field>
-                <label
-                  for="downloadProfileZip">
-                  Zip
-                </label>
-                <md-input
-                  id="downloadProfileZip"
-                  v-model="cadUser.Zipcode" />
-              </md-field>
-            </div>
-            <div class="md-layout-item md-size-50 md-small-size-100">
-              <md-field>
-                <label
-                  for="downloadProfileEmail">
-                  Email
-                </label>
-                <md-input
-                  id="downloadProfileEmail"
-                  v-model="cadUser.Email" />
-              </md-field>
-            </div>
-            <div class="md-layout-item md-size-50 md-small-size-100">
-              <md-field>
-                <label
-                  for="downloadProfilePhone">
-                  Phone
-                </label>
-                <md-input
-                  id="downloadProfilePhone"
-                  v-model="cadUser.Phone" />
-              </md-field>
-            </div>
-            <div class="md-layout-item md-size-100 md-small-size-100">
-              <md-field
-                class="download-format-option-field">
-                <label
-                  for="downloadProfileFormat">
-                  Desired Format
-                </label>
-                <md-select
-                  class="download-format-option"
-                  id="downloadProfileFormat"
-                  v-model="cadUser.DownloadFormats">
-                  <md-option
-                    v-for="option in desiredFormatOptions"
-                    :key="option.title"
-                    :value="option.value">
-                    {{ option.text }}
-                  </md-option>
-                </md-select>
-              </md-field>
-            </div>
-          </fieldset>
+          <div class="modal-content-wrap">
+            <p>
+              To minimize abuse, a one-time registration is required before you can view or download CAD drawings.
+              Hamilton takes your privacy very seriously. Hamilton does not sell or rent your contact information to
+              anyone.
+            </p>
+            <fieldset class="md-layout md-gutter">
+              <div class="md-layout-item md-small-size-100 md-size-50">
+                <md-field>
+                  <label
+                    for="downloadProfileName">
+                    Name
+                  </label>
+                  <md-input
+                    id="downloadProfileName"
+                    v-model="cadUser.FullName" />
+                </md-field>
+              </div>
+              <div class="md-layout-item md-small-size-100 md-size-50">
+                <md-field>
+                  <label
+                    for="downloadProfileCompanyName">
+                    Company Name
+                  </label>
+                  <md-input
+                    id="downloadProfileCompanyName"
+                    v-model="cadUser.Company" />
+                </md-field>
+              </div>
+              <div class="md-layout-item md-size-100 md-small-size-100">
+                <md-field>
+                  <label
+                    for="downloadProfileAddress">
+                    Address
+                  </label>
+                  <md-input
+                    id="downloadProfileAddress"
+                    v-model="cadUser.Address" />
+                </md-field>
+              </div>
+              <div class="md-layout-item md-size-50 md-small-size-100">
+                <md-field>
+                  <label
+                    for="downloadProfileCity">
+                    City
+                  </label>
+                  <md-input
+                    id="downloadProfileCity"
+                    v-model="cadUser.City" />
+                </md-field>
+              </div>
+              <div class="md-layout-item md-size-30 md-small-size-100">
+                <md-field>
+                  <label
+                    for="downloadProfileState">
+                    State
+                  </label>
+                  <md-input
+                    id="downloadProfileState"
+                    v-model="cadUser.State" />
+                </md-field>
+              </div>
+              <div class="md-layout-item md-size-20 md-small-size-100">
+                <md-field>
+                  <label
+                    for="downloadProfileZip">
+                    Zip
+                  </label>
+                  <md-input
+                    id="downloadProfileZip"
+                    v-model="cadUser.Zipcode" />
+                </md-field>
+              </div>
+              <div class="md-layout-item md-size-50 md-small-size-100">
+                <md-field>
+                  <label
+                    for="downloadProfileEmail">
+                    Email
+                  </label>
+                  <md-input
+                    id="downloadProfileEmail"
+                    v-model="cadUser.Email" />
+                </md-field>
+              </div>
+              <div class="md-layout-item md-size-50 md-small-size-100">
+                <md-field>
+                  <label
+                    for="downloadProfilePhone">
+                    Phone
+                  </label>
+                  <md-input
+                    id="downloadProfilePhone"
+                    v-model="cadUser.Phone" />
+                </md-field>
+              </div>
+              <div class="md-layout-item md-size-100 md-small-size-100">
+                <md-field
+                  class="download-format-option-field">
+                  <label
+                    for="downloadProfileFormat">
+                    Desired Format
+                  </label>
+                  <md-select
+                    class="download-format-option"
+                    id="downloadProfileFormat"
+                    v-model="cadUser.DownloadFormats">
+                    <md-option
+                      v-for="option in desiredFormatOptions"
+                      :key="option.title"
+                      :value="option.value">
+                      {{ option.text }}
+                    </md-option>
+                  </md-select>
+                </md-field>
+              </div>
+            </fieldset>
+          </div>
           <md-dialog-actions>
             <div class="message-wrap">
               <transition
@@ -163,11 +165,12 @@
             </div>
           </md-dialog-actions>
         </md-tab>
-        <md-tab md-label="Already Registered">
-          <p>
-            If you have already registered in the past, please enter your full name and email address so that we can look it up.
-          </p>
-          <fieldset class="md-layout md-gutter">
+          <md-tab md-label="Already Registered">
+          <div class="modal-content-wrap">
+            <p>
+              If you have already registered in the past, please enter your full name and email address so that we can look it up.
+            </p>
+            <fieldset class="md-layout md-gutter">
             <div class="md-layout-item md-size-50 md-small-size-100">
               <md-field>
                 <label
@@ -192,6 +195,7 @@
               </md-field>
             </div>
           </fieldset>
+          </div>
           <md-dialog-actions>
             <div class="message-wrap">
               <transition
@@ -429,15 +433,49 @@ export default {
   }
 
   @media screen and (max-width: $medium) {
-    position: relative;
-    float: left;
+    //position: relative;
+    //float: left;
   }
 
   &.md-dialog {
-    z-index: 1001;
+    z-index: 1040;
+  }
+  @media screen and (max-height: 850px), screen and (max-width: $large) {
+    .md-tabs.md-theme-default .md-tabs-navigation {
+      box-shadow: 0px 5px 15px -12px rgb(0 0 0 / 42%);
+    }
+
+    .md-dialog-container.md-dialog-fullscreen.md-theme-default {
+      height: 100%;
+    }
+    .md-tabs.md-alignment-left.md-theme-default {
+      height: calc(100% - 50px);
+    }
+    .modal-content-wrap {
+      overflow-y: auto;
+      height: calc(100% - 60px);
+      margin-right: -32px;
+      padding-right: 45px;
+      padding-top: 1rem;
+    }
+    .md-tabs.md-theme-default .md-tabs-content {
+      min-height: auto !important;
+      height: 100% !important;
+    }
+    .md-tab {
+      padding-top: 0;
+    }
+    .md-dialog-actions {
+      box-shadow: 0px -5px 15px -12px rgb(0 0 0 / 42%);
+      margin: 0 -2rem;
+    }
+      .md-tabs-container,
+      .md-tab {
+        height: 100%;
+      }
   }
 
-  @media screen and (max-width: $small) {
+    @media screen and (max-width: $small) {
     &.md-dialog {
       position: fixed;
       height: 100%;
@@ -559,6 +597,7 @@ export default {
   }
 
   .md-dialog-actions {
+    flex-direction: column;
     .message-wrap { min-width: 50%; }
     .dialog-button-wrap { }
     a.md-button.md-theme-default,
