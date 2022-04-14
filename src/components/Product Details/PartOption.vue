@@ -34,8 +34,9 @@
           <md-field
             class="checkbox">
             <md-checkbox
+              class="checkbox-wrap"
               v-model="isSelected">
-              Include with {{ productId }}
+              Include with <span class="product-id">{{ productId }}</span>
             </md-checkbox>
           </md-field>
         </div>
@@ -206,6 +207,21 @@ export default {
           margin-left: 0;
           margin-right: 0;
         }
+      }
+    }
+  }
+  .checkbox-wrap {
+    margin-left: -.5rem;
+
+    .md-checkbox-label {
+      display: flex;
+      flex-direction: row;
+      align-content: center;
+      flex-wrap: wrap;
+
+      .product-id {
+        margin-left: 3px;
+        display: inline-block;
       }
     }
   }
