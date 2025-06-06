@@ -13,8 +13,10 @@
       </div>
     </div>
     <product-image
+      ref="productImage"
       class="col-md-6"
-      :product-details="productDetails" />
+      :product-details="productDetails"
+      :part-id="productDetails.PartID" />
     <div class="product-summary col-md-6">
       <h1 class="hide-mobile">
         <small>Part Details for</small>
@@ -45,6 +47,20 @@
 
         <md-button
           v-if="productDetails.CADDrawingValue === CADDrawingTypes.Local && productDetails.CADVersionAvailable"
+          class="md-outline"
+          @click="onDownloadCadClick">
+          <font-awesome-icon :icon="['fas', 'download']" />
+          Download CAD (step file)
+        </md-button>
+
+        <md-button
+          class="md-outline"
+          @click="on3DViewClick">
+          <font-awesome-icon :icon="['fas', 'object-group']" />
+          {{ $refs.productImage && $refs.productImage.showing3D ? 'View Product Image' : 'View 3D Model' }}
+        </md-button>
+
+        <md-button
           class="md-outline"
           @click="onDownloadCadClick">
           <font-awesome-icon :icon="['fas', 'download']" />
@@ -154,7 +170,6 @@
 import ProductImage from './ProductImage'
 import { addToCart } from '../../api'
 import {CADDrawingTypes, ConfiguratorResultsPage, DownloadFormats, ProductTypes, ScrollToResults} from '../enums'
-import helpers from '../../utilities/helpers'
 
 export default {
   name: 'product-header',
@@ -248,13 +263,14 @@ export default {
     onDownloadCadClick () {
       const uri = `//${this.productDetails.CADVersionURL}`
       if (this.isValidCadUser) {
-        if (this.productDetails.CADDrawingValue === CADDrawingTypes.Local) {
+        /*if (this.productDetails.CADDrawingValue === CADDrawingTypes.Local) {
           this.isCadDownloading = true
           helpers.downloadFile(uri)
           setTimeout(() => {
             this.isCadDownloading = false
           }, 6000)
-        }
+        }*/
+       this.$refs.productImage.downloadCadFile()
       } else {
         this.$emit('display-cad-modal', true)
       }
@@ -307,6 +323,13 @@ export default {
     goToResultsPage () {
       window.location.href = `${location.origin}/${ConfiguratorResultsPage}`
     },
+    on3DViewClick() {
+      if (this.$refs.productImage && this.$refs.productImage.toggleViewer) {
+        this.$refs.productImage.toggleViewer()
+      } else {
+        console.warn('ProductImage component or show3DViewer method not found.')
+      }
+    }
   },
   created () {
   },

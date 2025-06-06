@@ -62,6 +62,11 @@ const getProductConfiguratorAttributes = function (svc, antiForgery, configurato
     .then(res => res)
 }
 
+const getVaultData = function (partID) {
+  return axios.get(`${rootPath}/GetVaultData?PartID=${partID}`)
+    .then(res => res.data)
+}
+
 export {
   addToCart,
   addCADUser,
@@ -70,5 +75,6 @@ export {
   getDetailsAPI,
   getIsValidCADUser,
   validateCADUser,
-  getProductConfiguratorAttributes
+  getProductConfiguratorAttributes,
+  getVaultData
 }

@@ -47,7 +47,8 @@
           :selected-attributes="selectedAttrs"
           :is-search-disabled="searchDisabled"
           :has-product-config-attributes="productDetails.HasProductConfigAttributes"
-          @display-cad-modal="displayCADModal = $event" />
+          @display-cad-modal="displayCADModal = $event"
+          :part-id="partId" />
       </section>
       <!-- TODO: Bunch of other stuff goes here -->
       <section class="container-fluid part-options-section">
